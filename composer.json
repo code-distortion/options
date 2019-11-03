@@ -1,0 +1,48 @@
+{
+    "name": "code-distortion/options",
+    "description": "Simple and flexible, expressive option handling",
+    "keywords": [
+        "code distortion",
+        "parameters",
+        "options",
+        "default",
+        "settings"
+    ],
+    "homepage": "https://github.com/code-distortion/options",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Tim Chandler",
+            "email": "tim@code-distortion.net",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1"
+    },
+    "require-dev": {
+        "jchook/phpunit-assert-throws": "^1.0",
+        "phpstan/phpstan": "^0.10 || ^0.11",
+        "phpunit/phpunit": "^7.0 || ^8.0",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "CodeDistortion\\Options\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CodeDistortion\\Options\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --level=7 .",
+        "phpcs": "vendor/bin/phpcs ."
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
