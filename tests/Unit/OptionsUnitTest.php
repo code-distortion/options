@@ -34,6 +34,8 @@ class OptionsUnitTest extends TestCase
         // all the different inputs that could be passed
         $allVariations = [
 
+            [null,             []],
+
             // strings
             ['',               []],
             ['a',              ['a' => true]],
@@ -212,7 +214,7 @@ class OptionsUnitTest extends TestCase
                     }
                     $currentString .= (mb_strlen($currentString) ? ' ' : '').$input;
                 // stick arrays together
-                } else {
+                } elseif (is_array($input)) {
                     if (mb_strlen($currentString)) {
                         $currentInputs[] = $currentString;
                         $currentString = '';

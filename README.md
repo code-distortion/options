@@ -125,7 +125,7 @@ You can specify option values as either [expressive strings](#expressive-string-
 "'my \'val\''=true" // ["my 'val'" => true]
 ```
 
-Multiple string values can joined together and separated with either spaces "` `" or a comma `,` (or both)
+Multiple string values can joined together and separated with either spaces "` `" or a comma `,` (or both):
 
 ``` php
 'myVal1=abc +myVal2 -myVal3'   // ['myVal1' => 'abc', 'myVal2' => true, 'myVal3' => false']
@@ -179,7 +179,7 @@ composer test
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-### SemVer statement
+### SemVer
 
 This library uses [SemVer 2.0.0](https://semver.org/) versioning. This means that changes to `X` indicate a breaking change: `0.0.X`, `0.X.y`, `X.y.z`. When this library changes to version 1.0.0, 2.0.0 and so forth it doesn't indicate that it's necessarily a notable release, it simply indicates that the changes were breaking.
 

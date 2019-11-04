@@ -349,7 +349,7 @@ class Options
                     }
                 }
             // or it's a key-value-pair
-            } else {
+            } elseif (!is_int($key)) {
                 $key = trim($key);
                 if (mb_strlen($key)) {
                     $parsedSet[$key] = $value;
