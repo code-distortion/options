@@ -329,15 +329,15 @@ class OptionsUnitTest extends TestCase
 
 
         // allow unexpected option 'b' that wasn't in the defaults
-        $this->assertSame(['a' => true, 'b' => true], Options::allowUnexpected()->defaults('a')->resolve('b'));
+        $this->assertSame(['a' => true, 'b' => true], Options::allowUnexpected()->defaults('a')->resolve('b')->all());
 
         // allow unexpected option 'b' because there were no defaults
-        $this->assertSame(['b' => true], Options::allowUnexpected()->resolve('b'));
-        $this->assertSame(['b' => true], Options::resolve('b'));
+        $this->assertSame(['b' => true], Options::allowUnexpected()->resolve('b')->all());
+        $this->assertSame(['b' => true], Options::resolve('b')->all());
 
         // option b was not a default so it was unexpected
         $this->assertThrows(Exception::class, function () {
-            Options::defaults('a')->resolve('b');
+            Options::defaults('a')->resolve('b')->all();
         });
 
 
@@ -345,7 +345,7 @@ class OptionsUnitTest extends TestCase
         // combine()
         $this->assertSame(
             ['a' => 'A', 'b' => 'b'],
-            Options::defaults(['a' => 'a', 'b' => 'b'])->resolve(['a' => 'A']) // this will be combined with defaults
+            Options::defaults(['a' => 'a', 'b' => 'b'])->resolve(['a' => 'A'])->all() // will be combined with defaults
         );
 
         // parse()
@@ -356,15 +356,60 @@ class OptionsUnitTest extends TestCase
 
 
 
+        // test how custom values are stored internally
+        // and the resolved result is re-determined when certain changes occur
+        $options = Options::defaults('a b c')->resolve('-a -b -d')->allowUnexpected();
+        $this->assertFalse($options->value('a'));
+        $this->assertFalse($options->value('b'));
+        $this->assertTrue($options->value('c'));
+        $this->assertFalse($options->value('d'));
+        $this->assertNull($options->value('e'));
+
+        $this->assertTrue($options->has('a'));
+        $this->assertFalse($options->has('e'));
+
+        $options->defaults('e'); // forces a re-resolve
+        $this->assertFalse($options->value('a'));
+        $this->assertFalse($options->value('b'));
+        $this->assertNull($options->value('c'));
+        $this->assertFalse($options->value('d'));
+        $this->assertTrue($options->value('e'));
+
+        $this->assertTrue($options->has('a'));
+        $this->assertTrue($options->has('e'));
+
+        $options->addDefaults('c'); // forces a re-resolve
+        $this->assertFalse($options->value('a'));
+        $this->assertFalse($options->value('b'));
+        $this->assertTrue($options->value('c'));
+        $this->assertFalse($options->value('d'));
+        $this->assertTrue($options->value('e'));
+
+        $this->assertTrue($options->has('a'));
+        $this->assertTrue($options->has('e'));
+
+        $options->resolve(); // forces a re-resolve
+        $this->assertNull($options->value('a'));
+        $this->assertNull($options->value('b'));
+        $this->assertTrue($options->value('c'));
+        $this->assertNull($options->value('d'));
+        $this->assertTrue($options->value('e'));
+
+        $this->assertFalse($options->has('a'));
+        $this->assertTrue($options->has('e'));
+
+
+
         // validation of the option values when using combine()
         $params = [];
         $callback = function (string $name, $value, ?bool $wasExpected) use (&$params): bool {
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return true;
         };
-        Options::defaults(['a' => 'a'])->validator($callback)->allowUnexpected()->resolve(['b' => 'B']);
+        Options::defaults(['a' => 'a'])->validator($callback)->allowUnexpected()->resolve(['b' => 'B'])->all();
         $this->assertSame(
             [
+                ['name' => 'b', 'value' => 'B', 'wasExpected' => true],
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
                 ['name' => 'b', 'value' => 'B', 'wasExpected' => false],
             ],
@@ -381,10 +426,12 @@ class OptionsUnitTest extends TestCase
             Options::defaults(['a' => 'a'])
                 ->allowUnexpected()
                 ->validator($callback)
-                ->resolve(['b' => 'B', 'c' => 'C']);
+                ->resolve(['b' => 'B', 'c' => 'C'])->all();
         });
         $this->assertSame(
             [
+                ['name' => 'b', 'value' => 'B', 'wasExpected' => true],
+                ['name' => 'c', 'value' => 'C', 'wasExpected' => true],
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
             ],
             $params
@@ -400,12 +447,11 @@ class OptionsUnitTest extends TestCase
             Options::defaults(['a' => 'a'])
                 ->allowUnexpected()
                 ->validator($callback)
-                ->resolve(['b' => 'B', 'c' => 'C']);
+                ->resolve(['b' => 'B', 'c' => 'C'])->all();
         });
         $this->assertSame(
             [
-                ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
-                ['name' => 'b', 'value' => 'B', 'wasExpected' => false],
+                ['name' => 'b', 'value' => 'B', 'wasExpected' => true],
             ],
             $params
         );

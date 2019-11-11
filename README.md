@@ -5,17 +5,17 @@
 ***code-distortion/options*** is a PHP library for managing options in a simple, flexible and expressive way.
 
 ``` php
-// You can format your options in expressive string format:
+// You can format your options in expressive string format
 $results = Options::defaults('sendAlerts dailyLimit=123.45 !applyDailyLimit currency=AUD plan="Silver Plan"')->resolve('currency=USD plan="Gold Plan"');
 
-// $results:
+// $results
 // [ 'sendAlerts' => true,
 //   'dailyLimit' => 123.45,
 //   'applyDailyLimit' => false,
 //   'currency' => 'USD',
 //   'plan' => 'Gold Plan' ]
 
-// This is equivalent to using array key-value-pairs:
+// This is equivalent to using array key-value-pairs
 $results = Options::defaults([
     'sendAlerts' => true,
     'dailyLimit' => 123.45,
@@ -48,11 +48,11 @@ use CodeDistortion\Options\Options;
 $defaults = 'sendEmails sendSms !sendSnail';
 $options = Options::defaults($defaults); // sets the defaults for the first time, or replaces them completely
 
-// you can alter the current default values:
+// you can alter the current default values
 $quietModeDefaults = '!sendSms';
 $options->addDefaults($quietModeDefaults); // adds to the existing defaults - overriding where necessary
 
-// retrieve the processed options as an array
+// retrieve the processed option defaults as an array
 $options->getDefaults();
 ```
 
@@ -61,28 +61,37 @@ $options->getDefaults();
 To combine default values and custom values, use the `resolve()` method:
 
 ``` php
-// resolve a combined set of values:
+// resolve a combined set of values
 $defaults = 'sendEmails sendSms !sendSnail';
 $userPrefs = '!sendEmails sendSms';
-$results = Options::defaults($defaults)->resolve($userPrefs);
+$options = Options::defaults($defaults)->resolve($userPrefs);
 
-// $results:
+// retrieve all the option values
+$results = $options->all();
 // [ 'sendEmails' => false,
 //   'sendSms' => true,
 //   'sendSnail' => false ]
+
+// retrieve a particular option's value
+$value = $options->value('sendEmails'); // false
+$value = $options->value('sendTweet');  // null
+
+// check if a particular option is set
+$has = $options->has('sendEmails'); // true
+$has = $options->has('sendTweet');  // false
 ````
-
-The `parse()` method is also available if you would like to skip the defaults and just take advantage of the string parsing functionality:
-
-``` php
-$results = Option::parse('sendEmails sendSms !sendSnail'); // ['sendEmails' => true, 'sendSms' => true, 'sendSnail' => false]
-```
 
 ***Note:*** If you specify default values, any values passed to `resolve()` that aren't present in the defaults will generate an exception unless `allowUnexpected()` is called before hand:
 
 ``` php
 // the 'sendTweet' option is allowed because allowUnexpected() was called
 $results = Options::defaults('sendEmails sendSms !sendSnail')->allowUnexpected()->validator('sendTweet');
+```
+
+The `parse()` method is also available if you would like to skip the defaults and just take advantage of the string parsing functionality:
+
+``` php
+$results = Option::parse('sendEmails sendSms !sendSnail'); // ['sendEmails' => true, 'sendSms' => true, 'sendSnail' => false]
 ```
 
 ### Value types
@@ -109,9 +118,9 @@ You can specify option values as either [expressive strings](#expressive-string-
 // strings
 'myVal='          // ['myVal' => '']
 'myVal=somevalue' // ['myVal' => 'somevalue']
-'myVal="true"'    // ['myVal' => 'true'] (not a boolean)
 
 // quoted value strings
+'myVal="true"'           // ['myVal' => 'true'] (not a boolean)
 'myVal="some value"'     // ['myVal' => 'some value']
 'myVal="some \"value\""' // ['myVal' => 'some "value"']
 "myVal='some value'"     // ['myVal' => 'some value']
@@ -151,7 +160,7 @@ You may specify values simply as arrays:
 
 ### Validation
 
-If you want to validate the given values you can pass a callback closure. Each value that is picked will be passed to your callback to check that it's valid. If it returns a false-y value, an exception will be raised.
+If you want to validate the given values you can add a callback closure. Each value that is picked will be passed to your callback to check that it's valid. If it returns a false-y value, an exception will be raised.
 
 ``` php
 $callback = function (string $name, $value, bool $wasExpected): bool {
@@ -166,7 +175,8 @@ Options::validator($callback)->defaults('sendEmails sendSms !sendSnail')->resolv
 The methods below may be chained together, and any of them can be called statically to instantiate an Options object:
 
 ``` php
-$results = Options::allowUnexpected()->validator($callback)->defaults($defaults)->addDefaults($extraDefaults)->resolve($customValues);
+$options = Options::allowUnexpected()->validator($callback)->defaults($defaults)->addDefaults($extraDefaults)->resolve($customValues); // chainable
+$results = $options->all();
 ```
 
 ## Testing

@@ -24,11 +24,26 @@ class Options
     protected $allowUnexpected = false;
 
     /**
-     * The default values to fall-back to
+     * The default options to fall-back to
      *
      * @var ?array
      */
     protected $defaults = null;
+
+    /**
+     * Custom options that are added to the defaults
+     *
+     * @var ?array
+     */
+    protected $custom = null;
+
+    /**
+     * Resolved options - the custom added to the defaults
+     *
+     * @var ?array
+     */
+    protected $resolved = null;
+
 
 
     /**
@@ -114,6 +129,7 @@ class Options
     private function callValidator(?callable $validator): self
     {
         $this->validator = $validator;
+        $this->resolved = null; // force reResolve to re-evaluate
         return $this; // chainable
     }
 
@@ -126,6 +142,7 @@ class Options
     private function callAllowUnexpected(bool $allow = true): self
     {
         $this->allowUnexpected = $allow;
+        $this->resolved = null; // force reResolve to re-evaluate
         return $this; // chainable
     }
 
@@ -138,6 +155,7 @@ class Options
     private function callDefaults(...$args): self
     {
         $this->defaults = (count($args) ? static::combineSets($args) : null);
+        $this->resolved = null; // force reResolve to re-evaluate
         return $this; // chainable
     }
 
@@ -151,38 +169,79 @@ class Options
     {
         if (count($args)) {
             $this->defaults = static::combineSets($args, $this->defaults, true);
+            $this->resolved = null; // force reResolve to re-evaluate
         }
         return $this; // chainable
     }
 
     /**
-     * Let the caller specify the default values to fall-back to
+     * Return the default option values
      *
-     * @return ?array
+     * @return array
      */
-    public function getDefaults(): ?array
+    public function getDefaults(): array
     {
-        return $this->defaults;
+        return (is_array($this->defaults) ? $this->defaults : []);
     }
 
     /**
      * Resolve the given options (includes the default values)
      *
      * @param mixed ...$args The sets of options to combine. The last ones take precedence.
-     * @return array The resolved options
+     * @return static
      */
-    private function callResolve(...$args)
+    private function callResolve(...$args): self
     {
-        return static::combineSets($args, $this->defaults, $this->allowUnexpected);
+        $this->custom = (count($args) ? static::combineSets($args) : null);
+        $this->resolved = null; // force reResolve to re-evaluate
+        return $this; // chainable
     }
 
     /**
-     * Parse the given options (but ignore the default values)
+     * Returns all the resolved option values
+     *
+     * @return array The resolved options
+     */
+    public function all(): array
+    {
+        return $this->reResolve();
+    }
+
+    /**
+     * Returns a particular resolved option value
+     *
+     * @param string $name The name of the option to return.
+     * @return mixed
+     */
+    public function value(string $name)
+    {
+        $this->reResolve();
+        return (
+            (is_array($this->resolved)) && (array_key_exists($name, $this->resolved))
+            ? $this->resolved[$name]
+            : null
+        );
+    }
+
+    /**
+     * Checks whether a particular resolved option exists
+     *
+     * @param string $name The name of the option to check.
+     * @return boolean
+     */
+    public function has(string $name): bool
+    {
+        $this->reResolve();
+        return (is_array($this->resolved)) && (array_key_exists($name, $this->resolved));
+    }
+
+    /**
+     * Parse the given options (but ignore the default values and don't store the result)
      *
      * @param mixed ...$args The sets of options to resolve. The last ones take precedence.
      * @return array The parsed options
      */
-    private function callParse(...$args)
+    private function callParse(...$args): array
     {
         return static::combineSets($args);
     }
@@ -190,6 +249,19 @@ class Options
 
 
 
+
+    /**
+     * Combine the custom options with the defaults
+     *
+     * @return array
+     */
+    protected function reResolve(): array
+    {
+        if (is_null($this->resolved)) {
+            $this->resolved = static::combineSets([$this->custom], $this->defaults, $this->allowUnexpected);
+        }
+        return $this->resolved;
+    }
 
     /**
      * Combine the given options
