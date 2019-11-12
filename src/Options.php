@@ -215,12 +215,42 @@ class Options
      * @param string $name The name of the option to return.
      * @return mixed
      */
-    public function value(string $name)
+    public function get(string $name)
     {
         $this->reResolve();
         return (
             (is_array($this->resolved)) && (array_key_exists($name, $this->resolved))
             ? $this->resolved[$name]
+            : null
+        );
+    }
+
+    /**
+     * Returns a particular default option value
+     *
+     * @param string $name The name of the option to return.
+     * @return mixed
+     */
+    public function getDefault(string $name)
+    {
+        return (
+            (is_array($this->defaults)) && (array_key_exists($name, $this->defaults))
+            ? $this->defaults[$name]
+            : null
+        );
+    }
+
+    /**
+     * Returns a particular custom option value
+     *
+     * @param string $name The name of the option to return.
+     * @return mixed
+     */
+    public function getCustom(string $name)
+    {
+        return (
+            (is_array($this->custom)) && (array_key_exists($name, $this->custom))
+            ? $this->custom[$name]
             : null
         );
     }
@@ -235,6 +265,28 @@ class Options
     {
         $this->reResolve();
         return (is_array($this->resolved)) && (array_key_exists($name, $this->resolved));
+    }
+
+    /**
+     * Checks whether a particular default option exists
+     *
+     * @param string $name The name of the option to check.
+     * @return boolean
+     */
+    public function hasDefault(string $name): bool
+    {
+        return (is_array($this->defaults)) && (array_key_exists($name, $this->defaults));
+    }
+
+    /**
+     * Checks whether a particular custom option exists
+     *
+     * @param string $name The name of the option to check.
+     * @return boolean
+     */
+    public function hasCustom(string $name): bool
+    {
+        return (is_array($this->custom)) && (array_key_exists($name, $this->custom));
     }
 
     /**

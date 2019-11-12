@@ -360,41 +360,51 @@ class OptionsUnitTest extends TestCase
         // test how custom values are stored internally
         // and the resolved result is re-determined when certain changes occur
         $options = Options::defaults('a b c')->allowUnexpected()->resolve('-a -b -d');
-        $this->assertFalse($options->value('a'));
-        $this->assertFalse($options->value('b'));
-        $this->assertTrue($options->value('c'));
-        $this->assertFalse($options->value('d'));
-        $this->assertNull($options->value('e'));
+        $this->assertFalse($options->get('a'));
+        $this->assertTrue($options->getDefault('a'));
+        $this->assertFalse($options->getCustom('a'));
+        $this->assertFalse($options->get('b'));
+        $this->assertTrue($options->getDefault('b'));
+        $this->assertFalse($options->getCustom('b'));
+        $this->assertTrue($options->get('c'));
+        $this->assertTrue($options->getDefault('c'));
+        $this->assertNull($options->getCustom('c'));
+        $this->assertFalse($options->get('d'));
+        $this->assertNull($options->getDefault('d'));
+        $this->assertFalse($options->getCustom('d'));
+        $this->assertNull($options->get('e'));
+        $this->assertNull($options->getDefault('e'));
+        $this->assertNull($options->getCustom('e'));
 
         $this->assertTrue($options->has('a'));
         $this->assertFalse($options->has('e'));
 
         $options->defaults('e'); // forces a re-resolve
-        $this->assertFalse($options->value('a'));
-        $this->assertFalse($options->value('b'));
-        $this->assertNull($options->value('c'));
-        $this->assertFalse($options->value('d'));
-        $this->assertTrue($options->value('e'));
+        $this->assertFalse($options->get('a'));
+        $this->assertFalse($options->get('b'));
+        $this->assertNull($options->get('c'));
+        $this->assertFalse($options->get('d'));
+        $this->assertTrue($options->get('e'));
 
         $this->assertTrue($options->has('a'));
         $this->assertTrue($options->has('e'));
 
         $options->addDefaults('c'); // forces a re-resolve
-        $this->assertFalse($options->value('a'));
-        $this->assertFalse($options->value('b'));
-        $this->assertTrue($options->value('c'));
-        $this->assertFalse($options->value('d'));
-        $this->assertTrue($options->value('e'));
+        $this->assertFalse($options->get('a'));
+        $this->assertFalse($options->get('b'));
+        $this->assertTrue($options->get('c'));
+        $this->assertFalse($options->get('d'));
+        $this->assertTrue($options->get('e'));
 
         $this->assertTrue($options->has('a'));
         $this->assertTrue($options->has('e'));
 
         $options->resolve(); // forces a re-resolve
-        $this->assertNull($options->value('a'));
-        $this->assertNull($options->value('b'));
-        $this->assertTrue($options->value('c'));
-        $this->assertNull($options->value('d'));
-        $this->assertTrue($options->value('e'));
+        $this->assertNull($options->get('a'));
+        $this->assertNull($options->get('b'));
+        $this->assertTrue($options->get('c'));
+        $this->assertNull($options->get('d'));
+        $this->assertTrue($options->get('e'));
 
         $this->assertFalse($options->has('a'));
         $this->assertTrue($options->has('e'));
