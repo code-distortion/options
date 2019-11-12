@@ -4,7 +4,8 @@ namespace CodeDistortion\Options\Tests\Unit;
 
 use CodeDistortion\Options\Tests\TestCase;
 use CodeDistortion\Options\Options;
-use Exception;
+use CodeDistortion\Options\Exceptions\UndefinedMethodException;
+use CodeDistortion\Options\Exceptions\InvalidOptionException;
 use Throwable;
 
 /**
@@ -336,7 +337,7 @@ class OptionsUnitTest extends TestCase
         $this->assertSame(['b' => true], Options::resolve('b')->all());
 
         // option b was not a default so it was unexpected
-        $this->assertThrows(Exception::class, function () {
+        $this->assertThrows(InvalidOptionException::class, function () {
             Options::defaults('a')->resolve('b')->all();
         });
 
@@ -358,7 +359,7 @@ class OptionsUnitTest extends TestCase
 
         // test how custom values are stored internally
         // and the resolved result is re-determined when certain changes occur
-        $options = Options::defaults('a b c')->resolve('-a -b -d')->allowUnexpected();
+        $options = Options::defaults('a b c')->allowUnexpected()->resolve('-a -b -d');
         $this->assertFalse($options->value('a'));
         $this->assertFalse($options->value('b'));
         $this->assertTrue($options->value('c'));
@@ -422,7 +423,7 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($name != 'a'); // fail the 'a' option
         };
-        $this->assertThrows(Exception::class, function () use ($callback) {
+        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::defaults(['a' => 'a'])
                 ->allowUnexpected()
                 ->validator($callback)
@@ -443,7 +444,7 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($name != 'b'); // fail the 'b' option
         };
-        $this->assertThrows(Exception::class, function () use ($callback) {
+        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::defaults(['a' => 'a'])
                 ->allowUnexpected()
                 ->validator($callback)
@@ -462,7 +463,7 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($name != 'a'); // fail the 'a' option
         };
-        $this->assertThrows(Exception::class, function () use ($callback) {
+        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::validator($callback)->defaults(['a' => 'a']);
         });
         $this->assertSame(
@@ -478,7 +479,7 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($value == 'a'); // fail the option without the value 'a'
         };
-        $this->assertThrows(Exception::class, function () use ($callback) {
+        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::validator($callback)->defaults(['a' => 'a'])->addDefaults(['a' => 'A']);
         });
         $this->assertSame(
@@ -496,7 +497,7 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return false;
         };
-        $this->assertThrows(Exception::class, function () use ($callback) {
+        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::validator($callback)->parse(['a' => 'a']);
         });
         $this->assertSame(

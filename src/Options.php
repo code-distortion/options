@@ -2,7 +2,8 @@
 
 namespace CodeDistortion\Options;
 
-use Exception;
+use CodeDistortion\Options\Exceptions\UndefinedMethodException;
+use CodeDistortion\Options\Exceptions\InvalidOptionException;
 
 /**
  * Allow simple handling of runtime options
@@ -84,7 +85,7 @@ class Options
      * @param string $method The method to call.
      * @param array  $args   The arguments to pass.
      * @return mixed
-     * @throws Exception Thrown when the called method does not exist.
+     * @throws UndefinedMethodException Thrown when the called method does not exist.
      */
     public function __call(string $method, array $args)
     {
@@ -94,7 +95,7 @@ class Options
                 return call_user_func_array($toCall, $args);
             }
         }
-        throw new Exception('Undefined method: '.static::class.'::'.$method.'()');
+        throw UndefinedMethodException::undefinedMethod($method);
     }
 
     /**
@@ -103,7 +104,7 @@ class Options
      * @param string $method The method to call.
      * @param array  $args   The arguments to pass.
      * @return mixed
-     * @throws Exception Thrown when the called method does not exist.
+     * @throws UndefinedMethodException Thrown when the called method does not exist.
      */
     public static function __callStatic(string $method, array $args)
     {
@@ -113,7 +114,7 @@ class Options
                 return call_user_func_array($toCall, $args);
             }
         }
-        throw new Exception('Undefined method: '.static::class.'::'.$method.'()');
+        throw UndefinedMethodException::undefinedStaticMethod($method);
     }
 
 
@@ -194,6 +195,7 @@ class Options
     {
         $this->custom = (count($args) ? static::combineSets($args) : null);
         $this->resolved = null; // force reResolve to re-evaluate
+        $this->reResolve();
         return $this; // chainable
     }
 
@@ -270,7 +272,7 @@ class Options
      * @param array|null $defaults        The default options to fall-back to.
      * @param boolean    $allowUnexpected Should an exception be thrown in an unexpected option is found?.
      * @return array The combined options
-     * @throws Exception Thrown when an option was given but it isn't allowed.
+     * @throws InvalidOptionException Thrown when an option was given but it isn't allowed.
      */
     protected function combineSets(array $optionSets, array $defaults = null, bool $allowUnexpected = false)
     {
@@ -296,7 +298,7 @@ class Options
 
                 // stop if unexpected (and not allowed)
                 if ((!$isExpected) && (!$allowUnexpected)) {
-                    throw new Exception('The option "'.$key.'" was not expected');
+                    throw InvalidOptionException::unexpectedOption($key);
                 }
 
                 // validate the $key + $value
@@ -439,14 +441,14 @@ class Options
      * @param mixed   $value      The option value.
      * @param boolean $isExpected Was this option expected (ie. specified in the defaults?).
      * @return void
-     * @throws Exception Thrown when the given option or value isn't valid.
+     * @throws InvalidOptionException Thrown when the given option or value isn't valid.
      */
     protected function validateOption(string $key, $value, bool $isExpected): void
     {
         if (is_callable($this->validator)) {
             $isValid = (bool) ($this->validator)($key, $value, $isExpected);
             if (!$isValid) {
-                throw new Exception('The option "'.$key.'" and/or it\'s value "'.$value.'" are not allowed');
+                throw InvalidOptionException::invalidOptionOrValue($key, $value);
             }
         }
     }
