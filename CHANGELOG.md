@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
+## [0.4.0] - 2019-11-13
+
+### Added
+- added hasDefault() and hasCustom() methods - to complement has()
+- added getDefault() and getCustom() methods - to complement get()
+
+### Changed (breaking)
+- renamed value() method to get()
+
+### Changed
+- Added custom exceptions
+
+
+
 ## [0.3.0] - 2019-11-12
 
 ### Added

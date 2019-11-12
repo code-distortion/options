@@ -73,12 +73,16 @@ $results = $options->all();
 //   'sendSnail' => false ]
 
 // retrieve a particular option's value
-$value = $options->value('sendEmails'); // false
-$value = $options->value('sendTweet');  // null
+$value = $options->get('sendEmails'); // false
+$value = $options->get('sendTweet');  // null
+$value = $options->getDefault('sendEmails'); // true
+$value = $options->getCustom('sendEmails');  // false
 
 // check if a particular option is set
 $has = $options->has('sendEmails'); // true
 $has = $options->has('sendTweet');  // false
+$has = $options->hasDefault('sendSnail'); // true
+$has = $options->hasCustom('sendSnail');  // false
 ````
 
 ***Note:*** If you specify default values, any values passed to `resolve()` that aren't present in the defaults will generate an exception unless `allowUnexpected()` is called before hand:
