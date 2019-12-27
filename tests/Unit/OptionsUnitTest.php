@@ -9,7 +9,7 @@ use CodeDistortion\Options\Exceptions\InvalidOptionException;
 use Throwable;
 
 /**
- * Test the Percent library class
+ * Test the Options library class
  *
  * @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
  */
