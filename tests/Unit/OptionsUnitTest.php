@@ -4,27 +4,15 @@ namespace CodeDistortion\Options\Tests\Unit;
 
 use CodeDistortion\Options\Tests\TestCase;
 use CodeDistortion\Options\Options;
-use CodeDistortion\Options\Exceptions\UndefinedMethodException;
 use CodeDistortion\Options\Exceptions\InvalidOptionException;
-use Throwable;
 
 /**
- * Test the Options library class
+ * Test the Options library .
  *
  * @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
  */
 class OptionsUnitTest extends TestCase
 {
-    /**
-     * Some set-up, run before each test
-     *
-     * @return void
-     */
-    // public function setUp(): void
-    // {
-    //     parent::setUp();
-    // }
-
     /**
      * Provide the data for the test_option_detection test below.
      *
@@ -156,10 +144,11 @@ class OptionsUnitTest extends TestCase
     }
 
     /**
-     * Take the input variations and piece togeteher the possible different variations
+     * Take the input variations and piece together the possible different variations.
      *
      * @param array   $variations   Array containing the input and output values.
      * @param integer $recurseCount The number of times to recurse (how many inputs per combination?).
+     *
      * @return array
      */
     protected function buildCombinations(array $variations, int $recurseCount = 1): array
@@ -257,12 +246,14 @@ class OptionsUnitTest extends TestCase
 
 
     /**
-     * Test that the class detects different variations of options properly
+     * Test that the class detects different variations of options properly.
      *
      * @test
      * @dataProvider optionDataProvider
+     *
      * @param array $inputArgs       The input to parse.
      * @param array $expectedOutcome The output expected from parsing.
+     *
      * @return void
      */
     public function test_option_detection(array $inputArgs, array $expectedOutcome): void
@@ -278,9 +269,10 @@ class OptionsUnitTest extends TestCase
 
 
     /**
-     * Test the ways the Options class can be used
+     * Test the ways the Options class can be used.
      *
      * @test
+     *
      * @return void
      */
     public function test_usage(): void
