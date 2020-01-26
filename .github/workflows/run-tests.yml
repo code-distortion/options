@@ -1,0 +1,50 @@
+name: run-tests
+
+on:
+    push:
+    schedule:
+        - cron: '0 0 * * *'
+
+jobs:
+    php-tests:
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-prefer }}
+
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: true
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+                php: [7.4, 7.3, 7.2, 7.1]
+                dependency-prefer: [prefer-lowest, prefer-stable]
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v1
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v1
+                with:
+                    php-version: ${{ matrix.php }}
+                    extensions: mbstring
+                    coverage: none
+
+            # find out composer's cache directory on the current os - for the "Cache composer dependencies" step below
+            -   name: Determine composer's cache directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v1
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: php-${{ matrix.php }}-os-${{ matrix.os }}-dependency-prefer-${{ matrix.dependency-prefer }}-composer-${{ hashFiles('composer.json') }}
+
+            -   name: Run composer install
+                run: |
+                    composer update --${{ matrix.dependency-prefer }} --prefer-dist --no-interaction --no-suggest
+
+            -   name: Execute tests
+                run: vendor/bin/phpunit
