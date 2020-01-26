@@ -13,7 +13,6 @@ class UndefinedMethodException extends OptionsException
      * Return a new instance when a undefined method was called.
      *
      * @param string $method The method that was called.
-     *
      * @return static
      */
     public static function undefinedMethod(string $method): self
@@ -25,7 +24,6 @@ class UndefinedMethodException extends OptionsException
      * Return a new instance when a undefined static method was called.
      *
      * @param string $method The method that was called.
-     *
      * @return static
      */
     public static function undefinedStaticMethod(string $method): self

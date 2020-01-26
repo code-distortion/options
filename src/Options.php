@@ -84,9 +84,7 @@ class Options
      *
      * @param string $method The method to call.
      * @param array  $args   The arguments to pass.
-     *
      * @return mixed
-     *
      * @throws UndefinedMethodException Thrown when the called method does not exist.
      */
     public function __call(string $method, array $args)
@@ -105,9 +103,7 @@ class Options
      *
      * @param string $method The method to call.
      * @param array  $args   The arguments to pass.
-     *
      * @return mixed
-     *
      * @throws UndefinedMethodException Thrown when the called method does not exist.
      */
     public static function __callStatic(string $method, array $args)
@@ -129,7 +125,6 @@ class Options
      * Let the caller specify a callback that's used to check each option against.
      *
      * @param callable|null $validator The callback to check each option and value with.
-     *
      * @return static
      */
     private function callValidator(?callable $validator): self
@@ -143,7 +138,6 @@ class Options
      * Let the caller specify whether unexpected options are allowed.
      *
      * @param boolean $allow Whether unexpected options are allowed or not.
-     *
      * @return static
      */
     private function callAllowUnexpected(bool $allow = true): self
@@ -157,9 +151,7 @@ class Options
      * Let the caller specify the default values to fall-back to.
      *
      * @param mixed ...$args The default values to store.
-     *
      * @return static
-     *
      * @throws InvalidOptionException Thrown when an option isn't valid.
      */
     private function callDefaults(...$args): self
@@ -173,9 +165,7 @@ class Options
      * Let the caller add extra defaults.
      *
      * @param mixed ...$args The default values to store.
-     *
      * @return static
-     *
      * @throws InvalidOptionException Thrown when an option isn't valid.
      */
     private function callAddDefaults(...$args): self
@@ -201,9 +191,7 @@ class Options
      * Resolve the given options (includes the default values).
      *
      * @param mixed ...$args The sets of options to combine. The last ones take precedence.
-     *
      * @return static
-     *
      * @throws InvalidOptionException Thrown when an option isn't valid or allowed.
      */
     private function callResolve(...$args): self
@@ -232,7 +220,6 @@ class Options
      * Returns a particular resolved option value.
      *
      * @param string $name The name of the option to return.
-     *
      * @return mixed
      */
     public function get(string $name)
@@ -254,7 +241,6 @@ class Options
      * Returns a particular default option value.
      *
      * @param string $name The name of the option to return.
-     *
      * @return mixed
      */
     public function getDefault(string $name)
@@ -270,7 +256,6 @@ class Options
      * Returns a particular custom option value.
      *
      * @param string $name The name of the option to return.
-     *
      * @return mixed
      */
     public function getCustom(string $name)
@@ -286,7 +271,6 @@ class Options
      * Checks whether a particular resolved option exists.
      *
      * @param string $name The name of the option to check.
-     *
      * @return boolean
      */
     public function has(string $name): bool
@@ -304,7 +288,6 @@ class Options
      * Checks whether a particular default option exists.
      *
      * @param string $name The name of the option to check.
-     *
      * @return boolean
      */
     public function hasDefault(string $name): bool
@@ -316,7 +299,6 @@ class Options
      * Checks whether a particular custom option exists.
      *
      * @param string $name The name of the option to check.
-     *
      * @return boolean
      */
     public function hasCustom(string $name): bool
@@ -328,9 +310,7 @@ class Options
      * Parse the given options (but ignore the default values and don't store the result).
      *
      * @param mixed ...$args The sets of options to resolve. The last ones take precedence.
-     *
-     * @return array The parsed options
-     *
+     * @return array The parsed options.
      * @throws InvalidOptionException Thrown when an option isn't valid.
      */
     private function callParse(...$args): array
@@ -346,7 +326,6 @@ class Options
      * Combine the custom options with the defaults.
      *
      * @return array
-     *
      * @throws InvalidOptionException Thrown when an option isn't valid or allowed.
      */
     protected function reResolve(): array
@@ -363,12 +342,10 @@ class Options
      * @param array      $optionSets      The sets of options to combine. The last ones take precedence.
      * @param array|null $defaults        The default options to fall-back to.
      * @param boolean    $allowUnexpected Should an exception be thrown in an unexpected option is found?.
-     *
-     * @return array The combined options
-     *
+     * @return array The combined options.
      * @throws InvalidOptionException Thrown when an option is given but isn't allowed.
      */
-    protected function combineSets(array $optionSets, array $defaults = null, bool $allowUnexpected = false)
+    protected function combineSets(array $optionSets, array $defaults = null, bool $allowUnexpected = false): array
     {
         $hasDefaults = false;
         if (is_array($defaults)) {
@@ -409,10 +386,9 @@ class Options
      * Parse the given option-set (a string, or an array containing strings or key-value pairs).
      *
      * @param string|array $optionSet The set of options to parse.
-     *
      * @return array
      */
-    protected static function parseSet($optionSet)
+    protected static function parseSet($optionSet): array
     {
         $pregDividerChars = preg_quote(implode(static::DIVIDERS));
 
@@ -534,9 +510,7 @@ class Options
      * @param string  $key        The option name.
      * @param mixed   $value      The option value.
      * @param boolean $isExpected Was this option expected (ie. specified in the defaults?).
-     *
      * @return void
-     *
      * @throws InvalidOptionException Thrown when the given option or value isn't valid.
      */
     protected function validateOption(string $key, $value, bool $isExpected): void

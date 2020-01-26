@@ -2,9 +2,8 @@
 
 namespace CodeDistortion\Options\Tests;
 
-use PHPUnit\Framework\TestCase as UnitTestCase;
-
 use Jchook\AssertThrows\AssertThrows;
+use PHPUnit\Framework\TestCase as UnitTestCase;
 
 /**
  * The test case that unit tests extend from.

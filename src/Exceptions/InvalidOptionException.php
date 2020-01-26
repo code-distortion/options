@@ -11,7 +11,6 @@ class InvalidOptionException extends OptionsException
      * Return a new instance when a unexpected option was used.
      *
      * @param string $name The name of the unexpected option used.
-     *
      * @return static
      */
     public static function unexpectedOption(string $name): self
@@ -24,7 +23,6 @@ class InvalidOptionException extends OptionsException
      *
      * @param string $name  The name of the invalid option used.
      * @param mixed  $value The invalid value used.
-     *
      * @return static
      */
     public static function invalidOptionOrValue(string $name, $value): self
