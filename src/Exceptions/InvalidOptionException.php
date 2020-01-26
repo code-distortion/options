@@ -2,17 +2,16 @@
 
 namespace CodeDistortion\Options\Exceptions;
 
-use Exception;
-
 /**
- * Exception for when invalid options methods are used
+ * Exception for when invalid options methods are used.
  */
-class InvalidOptionException extends Exception
+class InvalidOptionException extends OptionsException
 {
     /**
-     * Return a new instance when a unexpected option was used
+     * Return a new instance when a unexpected option was used.
      *
      * @param string $name The name of the unexpected option used.
+     *
      * @return static
      */
     public static function unexpectedOption(string $name): self
@@ -21,10 +20,11 @@ class InvalidOptionException extends Exception
     }
 
     /**
-     * Return a new instance when an invalid option (or it's value) was used
+     * Return a new instance when an invalid option (or it's value) was used.
      *
      * @param string $name  The name of the invalid option used.
      * @param mixed  $value The invalid value used.
+     *
      * @return static
      */
     public static function invalidOptionOrValue(string $name, $value): self
