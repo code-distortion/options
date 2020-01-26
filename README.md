@@ -4,7 +4,7 @@
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/code-distortion/options?style=flat-square)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/code-distortion/options/run-tests?label=tests&style=flat-square)](https://github.com/code-distortion/options/actions)
 [![Buy us a tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://offset.earth/treeware?gift-trees)
-[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](code_of_conduct.md)
+[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](CODE_OF_CONDUCT.md)
 
 ***code-distortion/options*** is a PHP library for managing options in a simple, flexible and expressive way.
 
@@ -203,7 +203,7 @@ This library uses [SemVer 2.0.0](https://semver.org/) versioning. This means tha
 
 ## Treeware
 
-You're free to use this package, but if it makes it to your production environment you are required to buy the world a tree.
+You're free to use this package, but if it makes it to your production environment please plant or buy a tree for the world.
 
 It’s now common knowledge that one of the best tools to tackle the climate crisis and keep our temperatures from rising above 1.5C is to <a href="https://www.bbc.co.uk/news/science-environment-48870920">plant trees</a>. If you support this package and contribute to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
 
