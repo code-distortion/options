@@ -9,27 +9,15 @@
 ***code-distortion/options*** is a PHP library for managing options in a simple, flexible and expressive way.
 
 ``` php
-// You can format your options in expressive string format
-$results = Options::defaults('sendAlerts dailyLimit=123.45 !applyDailyLimit currency=AUD plan="Silver Plan"')->resolve('currency=USD plan="Gold Plan"');
+use CodeDistortion\Options\Options;
 
-// $results
+$results = Options::parse('sendAlerts dailyLimit=123.45 !applyDailyLimit currency=AUD plan="Silver Plan"');
+
 // [ 'sendAlerts' => true,
 //   'dailyLimit' => 123.45,
 //   'applyDailyLimit' => false,
-//   'currency' => 'USD',
-//   'plan' => 'Gold Plan' ]
-
-// This is equivalent to using array key-value-pairs
-$results = Options::defaults([
-    'sendAlerts' => true,
-    'dailyLimit' => 123.45,
-    'applyDailyLimit' => false,
-    'currency' => 'AUD',
-    'plan' => 'Silver Plan'
-])->resolve([
-    'currency' => 'USD',
-    'plan' => 'Gold Plan'
-]);
+//   'currency' => 'AUD',
+//   'plan' => 'Silver Plan' ]
 ```
 
 ## Installation
@@ -42,64 +30,15 @@ composer require code-distortion/options
 
 ## Usage
 
-### Specifying default values
-
-You can optionally specify default fall-back values to use by calling `defaults()`:
+The `parse()` method will take your string and break it down into separate options:
 
 ``` php
 use CodeDistortion\Options\Options;
 
-$defaults = 'sendEmails sendSms !sendSnail';
-$options = Options::defaults($defaults); // sets the defaults for the first time, or replaces them completely
-
-// you can alter the current default values
-$quietModeDefaults = '!sendSms';
-$options->addDefaults($quietModeDefaults); // adds to the existing defaults - overriding where necessary
-
-// retrieve the processed option defaults as an array
-$options->getDefaults();
-```
-
-### Resolving a set of options
-
-To combine default values and custom values, use the `resolve()` method:
-
-``` php
-// resolve a combined set of values
-$defaults = 'sendEmails sendSms !sendSnail';
-$userPrefs = '!sendEmails sendSms';
-$options = Options::defaults($defaults)->resolve($userPrefs);
-
-// retrieve all the option values
-$results = $options->all();
-// [ 'sendEmails' => false,
+$results = Options::parse('sendEmails sendSms !sendSlack');
+// [ 'sendEmails' => true,
 //   'sendSms' => true,
-//   'sendSnail' => false ]
-
-// retrieve a particular option's value
-$value = $options->get('sendEmails'); // false
-$value = $options->get('sendTweet');  // null
-$value = $options->getDefault('sendEmails'); // true
-$value = $options->getCustom('sendEmails');  // false
-
-// check if a particular option is set
-$has = $options->has('sendEmails'); // true
-$has = $options->has('sendTweet');  // false
-$has = $options->hasDefault('sendSnail'); // true
-$has = $options->hasCustom('sendSnail');  // false
-````
-
-***Note:*** If you specify default values, any values passed to `resolve()` that aren't present in the defaults will generate an exception unless `allowUnexpected()` is called before hand:
-
-``` php
-// the 'sendTweet' option is allowed because allowUnexpected() was called
-$results = Options::defaults('sendEmails sendSms !sendSnail')->allowUnexpected()->validator('sendTweet');
-```
-
-The `parse()` method is also available if you would like to skip the defaults and just take advantage of the string parsing functionality:
-
-``` php
-$results = Option::parse('sendEmails sendSms !sendSnail'); // ['sendEmails' => true, 'sendSms' => true, 'sendSnail' => false]
+//   'sendSlack' => false ]
 ```
 
 ### Value types
@@ -154,7 +93,7 @@ Multiple string values can joined together and separated with either spaces "` `
 
 #### Array key-value-pairs
 
-You may specify values simply as arrays:
+You can specify values simply as arrays:
 
 ``` php
 ['myVal' => true]
@@ -164,18 +103,85 @@ You may specify values simply as arrays:
 // etc
 ```
 
-***Note:*** You may specify non-scalar values with this library (eg. nested arrays), however they aren't dealt with in any special way. They are currently treated like scalar values.
+***Note:*** You can specify non-scalar values with this library (eg. nested arrays), however they aren't dealt with in any special way. They are currently treated like scalar values.
+
+### Using in your code
+
+You can use an Options instance to handle values for you programmatically. The `resolve()` method will parse the input and return the Options object which you can then interrogate in your code:
+
+``` php
+$options = Options::resolve('sendEmails sendSms !sendSlack');
+$has = $options->has('sendEmails'); // true
+$has = $options->has('sendTweet');  // false
+$value = $options->get('sendEmails'); // false
+$value = $options->get('sendTweet');  // null
+```
+
+### Specifying default values
+
+You can specify default fall-back values to use by calling `defaults()`:
+
+``` php
+// set the defaults for the first time (or replaces them completely)
+$defaults = 'sendEmails sendSms !sendSlack';
+$options = Options::defaults($defaults);
+
+// add to the existing defaults (overriding where necessary)
+$quietModeDefaults = '!sendSms';
+$options->addDefaults($quietModeDefaults);
+
+// retrieve the defaults back as an array
+$options->getDefaults();
+```
+
+#### Resolving a set of options with defaults
+
+To combine default values and custom values, use the `defaults()` method and then `resolve()`:
+
+``` php
+// combine default and custom values
+$defaults = 'sendEmails sendSms !sendSlack';
+$userPrefs = '!sendEmails sendSms';
+$options = Options::defaults($defaults)->resolve($userPrefs);
+
+// check if particular options exist
+$has = $options->has('sendEmails'); // true
+$has = $options->has('sendTweet');  // false
+$has = $options->hasDefault('sendSlack'); // true
+$has = $options->hasCustom('sendSlack');  // false
+
+// retrieve individual values from $options
+$value = $options->get('sendEmails'); // false
+$value = $options->get('sendTweet');  // null
+$value = $options->getDefault('sendEmails'); // true
+$value = $options->getCustom('sendEmails');  // false
+
+// get the results combined
+$results = $options->all();
+// [ 'sendEmails' => false,
+//   'sendSms' => true,
+//   'sendSlack' => false ]
+```
+
+***Note:*** If you specify default values, any values passed to `resolve()` that aren't present in the defaults will generate an exception unless `allowUnexpected()` is called before hand:
+
+``` php
+// InvalidOptionException: "The option "sendTweet" was not expected"
+$options = Options::defaults('sendEmails sendSms !sendSlack')->resolve('sendTweet');
+// the 'sendTweet' option is now allowed because allowUnexpected() was called
+$options = Options::defaults('sendEmails sendSms !sendSlack')->allowUnexpected()->resolve('sendTweet');
+```
 
 ### Validation
 
-If you want to validate the given values you can add a callback closure. Each value that is picked will be passed to your callback to check that it's valid. If it returns a false-y value, an exception will be raised.
+If you want to validate the given values you can pass a callback closure to `validator()`. Each value that is picked will be passed to your callback to check that it's valid. If it returns a false-y value, an exception will be raised.
 
 ``` php
 $callback = function (string $name, $value, bool $wasExpected): bool {
-    return (is_bool($value)); // ensure the value is ok
+    return (is_bool($value)); // ensure the value is a boolean
 };
-// an exception will be raised because sendEmails is a string ("yes")
-Options::validator($callback)->defaults('sendEmails sendSms !sendSnail')->resolve('sendEmails=yes');
+// InvalidOptionException: "The option "sendEmails" and/or it's value "yes" are not allowed"
+Options::validator($callback)->defaults('sendEmails sendSms !sendSlack')->resolve('sendEmails=yes');
 ```
 
 ### Chaining
