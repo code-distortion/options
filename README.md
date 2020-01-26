@@ -12,19 +12,23 @@
 use CodeDistortion\Options\Options;
 
 $results = Options::parse('sendAlerts dailyLimit=123.45 !applyDailyLimit currency=AUD plan="Silver Plan"');
-
 // [ 'sendAlerts' => true,
 //   'dailyLimit' => 123.45,
 //   'applyDailyLimit' => false,
 //   'currency' => 'AUD',
 //   'plan' => 'Silver Plan' ]
+
+// when used programatically
+$options = Options::resolve('sendEmails sendSms !sendSlack');
+$value = $options->get('sendEmails'); // true
+$value = $options->get('sendSlack'); // false
 ```
 
 ## Installation
 
 Install the package via composer:
 
-```bash
+``` bash
 composer require code-distortion/options
 ```
 
@@ -113,7 +117,7 @@ You can use an Options instance to handle values for you programmatically. The `
 $options = Options::resolve('sendEmails sendSms !sendSlack');
 $has = $options->has('sendEmails'); // true
 $has = $options->has('sendTweet');  // false
-$value = $options->get('sendEmails'); // false
+$value = $options->get('sendEmails'); // true
 $value = $options->get('sendTweet');  // null
 ```
 
@@ -168,6 +172,7 @@ $results = $options->all();
 ``` php
 // InvalidOptionException: "The option "sendTweet" was not expected"
 $options = Options::defaults('sendEmails sendSms !sendSlack')->resolve('sendTweet');
+
 // the 'sendTweet' option is now allowed because allowUnexpected() was called
 $options = Options::defaults('sendEmails sendSms !sendSlack')->allowUnexpected()->resolve('sendTweet');
 ```
@@ -180,6 +185,7 @@ If you want to validate the given values you can pass a callback closure to `val
 $callback = function (string $name, $value, bool $wasExpected): bool {
     return (is_bool($value)); // ensure the value is a boolean
 };
+
 // InvalidOptionException: "The option "sendEmails" and/or it's value "yes" are not allowed"
 Options::validator($callback)->defaults('sendEmails sendSms !sendSlack')->resolve('sendEmails=yes');
 ```
