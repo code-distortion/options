@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
+## [0.5.1] - 2020-01-29
+
+### Changed
+- Reviewed README.md
+- added a base OptionsException class
+- cleaned up doc-blocks
+
+
+
 ## [0.5.0] - 2020-01-26
 
 ### Added
