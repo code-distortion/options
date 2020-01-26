@@ -205,7 +205,7 @@ This library uses [SemVer 2.0.0](https://semver.org/) versioning. This means tha
 
 You're free to use this package, but if it makes it to your production environment please plant or buy a tree for the world.
 
-It’s now common knowledge that one of the best tools to tackle the climate crisis and keep our temperatures from rising above 1.5C is to <a href="https://www.bbc.co.uk/news/science-environment-48870920">plant trees</a>. If you support this package and contribute to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
+It's now common knowledge that one of the best tools to tackle the climate crisis and keep our temperatures from rising above 1.5C is to <a href="https://www.bbc.co.uk/news/science-environment-48870920">plant trees</a>. If you support this package and contribute to the Treeware forest you'll be creating employment for local families and restoring wildlife habitats.
 
 You can buy trees here [offset.earth/treeware](https://offset.earth/treeware?gift-trees)
 

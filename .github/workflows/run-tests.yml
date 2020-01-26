@@ -15,9 +15,9 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                os: [ubuntu-latest, windows-latest]
+                os: [ubuntu-latest, macos-latest, windows-latest]
                 php: [7.4, 7.3, 7.2, 7.1]
-                dependency-prefer: [prefer-lowest, prefer-stable]
+                dependency-prefer: [prefer-stable, prefer-lowest]
 
         steps:
             -   name: Checkout code
@@ -36,13 +36,13 @@ jobs:
                 run: |
                     echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-            -   name: Cache composer dependencies
+            -   name: Cache dependencies (composer)
                 uses: actions/cache@v1
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: php-${{ matrix.php }}-os-${{ matrix.os }}-dependency-prefer-${{ matrix.dependency-prefer }}-composer-${{ hashFiles('composer.json') }}
 
-            -   name: Run composer install
+            -   name: Install dependencies (composer)
                 run: |
                     composer update --${{ matrix.dependency-prefer }} --prefer-dist --no-interaction --no-suggest
 
