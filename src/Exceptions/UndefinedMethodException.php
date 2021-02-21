@@ -17,7 +17,7 @@ class UndefinedMethodException extends OptionsException
      */
     public static function undefinedMethod(string $method): self
     {
-        return new static('Undefined method: '.static::getCallingClass().'::'.$method.'()');
+        return new static('Undefined method: ' . static::getCallingClass() . '::' . $method . '()');
     }
 
     /**
@@ -28,6 +28,6 @@ class UndefinedMethodException extends OptionsException
      */
     public static function undefinedStaticMethod(string $method): self
     {
-        return new static('Undefined static method: '.static::getCallingClass().'::'.$method.'()');
+        return new static('Undefined static method: ' . static::getCallingClass() . '::' . $method . '()');
     }
 }

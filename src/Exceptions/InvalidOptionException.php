@@ -15,7 +15,7 @@ class InvalidOptionException extends OptionsException
      */
     public static function unexpectedOption(string $name): self
     {
-        return new static('The option "'.$name.'" was not expected');
+        return new static('The option "' . $name . '" was not expected');
     }
 
     /**
@@ -27,6 +27,6 @@ class InvalidOptionException extends OptionsException
      */
     public static function invalidOptionOrValue(string $name, $value): self
     {
-        return new static('The option "'.$name.'" and/or it\'s value "'.$value.'" are not allowed');
+        return new static('The option "' . $name . '" and/or it\'s value "' . $value . '" are not allowed');
     }
 }

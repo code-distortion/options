@@ -201,7 +201,7 @@ class OptionsUnitTest extends TestCase
                         $currentInputs[] = $currentArray;
                         $currentArray = [];
                     }
-                    $currentString .= (mb_strlen($currentString) ? ' ' : '').$input;
+                    $currentString .= (mb_strlen($currentString) ? ' ' : '') . $input;
                 // stick arrays together
                 } elseif (is_array($input)) {
                     if (mb_strlen($currentString)) {

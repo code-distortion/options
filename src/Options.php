@@ -10,68 +10,34 @@ use CodeDistortion\Options\Exceptions\InvalidOptionException;
  */
 class Options
 {
-    /**
-     * Each option found is cross-checked with this callback to see if it's valid.
-     *
-     * @var callable|null
-     */
+    /** @var callable|null Each option found is cross-checked with this callback to see if it's valid. */
     protected $validator = null;
 
-    /**
-     * Should unexpected options be accepted? Otherwise an exception will be thrown.
-     *
-     * @var boolean
-     */
+    /** @var boolean Should unexpected options be accepted? Otherwise an exception will be thrown. */
     protected $allowUnexpected = false;
 
-    /**
-     * The default options to fall-back to.
-     *
-     * @var array|null
-     */
+    /** @var array|null The default options to fall-back to. */
     protected $defaults = null;
 
-    /**
-     * Custom options that are added to the defaults.
-     *
-     * @var array|null
-     */
+    /** @var array|null Custom options that are added to the defaults. */
     protected $custom = null;
 
-    /**
-     * Resolved options - the custom added to the defaults.
-     *
-     * @var array|null
-     */
+    /** @var array|null Resolved options - the custom added to the defaults. */
     protected $resolved = null;
 
 
 
-    /**
-     * Positive modifier characters.
-     *
-     * @var array
-     */
-    const POSITIVE_MODIFIERS = ['+'];
+    /** @var array Positive modifier characters. */
+    private const POSITIVE_MODIFIERS = ['+'];
 
-    /**
-     * Negative modifier characters.
-     *
-     * @var array
-     */
-    const NEGATIVE_MODIFIERS = ['!', '-'];
+    /** @var array Negative modifier characters. */
+    private const NEGATIVE_MODIFIERS = ['!', '-'];
 
-    /**
-     * Characters that separate options within a string.
-     *
-     * @var array
-     */
-    const DIVIDERS = [' ', ',', "\r", "\n", "\t"];
+    /** @var array Characters that separate options within a string. */
+    private const DIVIDERS = [' ', ',', "\r", "\n", "\t"];
 
-    /**
-     * Strings that have special meanings.
-     */
-    const SPECIAL_VALUES = [
+    /** Strings that have special meanings. */
+    private const SPECIAL_VALUES = [
         'true' => true,
         'false' => false,
         'null' => null,
@@ -89,8 +55,8 @@ class Options
      */
     public function __call(string $method, array $args)
     {
-        if (method_exists(static::class, 'call'.$method)) {
-            $toCall = [$this, 'call'.$method];
+        if (method_exists(static::class, 'call' . $method)) {
+            $toCall = [$this, 'call' . $method];
             if (is_callable($toCall)) {
                 return call_user_func_array($toCall, $args);
             }
@@ -108,8 +74,8 @@ class Options
      */
     public static function __callStatic(string $method, array $args)
     {
-        if (method_exists(static::class, 'call'.$method)) {
-            $toCall = [new static(), 'call'.$method];
+        if (method_exists(static::class, 'call' . $method)) {
+            $toCall = [new static(), 'call' . $method];
             if (is_callable($toCall)) {
                 return call_user_func_array($toCall, $args);
             }
@@ -403,16 +369,16 @@ class Options
             if ((is_int($key)) && (is_string($value))) {
 
                 $regex = '/'
-                    .'(' // key
-                        .'"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|' // double-quotes - allow escaping
-                        ."'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|" // single-quotes - allow escaping
-                        .'([^'.$pregDividerChars.'=]+)'      // no quotes
-                    .')(=(' // value
-                        .'"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|' // double-quotes - allow escaping
-                        ."'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|" // single-quotes - allow escaping
-                        .'([^'.$pregDividerChars.']*)'       // no quotes
-                    .'))?'
-                    .'/s';
+                    . '(' // key
+                        . '"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|' // double-quotes - allow escaping
+                        . "'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|" // single-quotes - allow escaping
+                        . '([^' . $pregDividerChars . '=]+)'  // no quotes
+                    . ')(=(' // value
+                        . '"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|' // double-quotes - allow escaping
+                        . "'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'|" // single-quotes - allow escaping
+                        . '([^' . $pregDividerChars . ']*)'   // no quotes
+                    . '))?'
+                    . '/s';
                 preg_match_all($regex, $value, $matches);
                 foreach (array_keys($matches[0]) as $index) {
 
