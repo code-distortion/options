@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/code-distortion/options.svg?style=flat-square)](https://packagist.org/packages/code-distortion/options)
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/code-distortion/options?style=flat-square)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/code-distortion/options/run-tests?label=tests&style=flat-square)](https://github.com/code-distortion/options/actions)
-[![Buy us a tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://offset.earth/treeware?gift-trees)
+[![Buy The World a Tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/code-distortion/options)
 [![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](CODE_OF_CONDUCT.md)
 
 ***code-distortion/options*** is a PHP library for managing options in a simple, flexible and expressive way.
@@ -24,6 +24,8 @@ $value = $options->get('sendEmails'); // true
 $value = $options->get('sendSlack'); // false
 ```
 
+
+
 ## Installation
 
 Install the package via composer:
@@ -31,6 +33,8 @@ Install the package via composer:
 ``` bash
 composer require code-distortion/options
 ```
+
+
 
 ## Usage
 
@@ -45,9 +49,13 @@ $results = Options::parse('sendEmails sendSms !sendSlack');
 //   'sendSlack' => false ]
 ```
 
+
+
 ### Value types
 
 You can specify option values as either [expressive strings](#expressive-string-format) or arrays of [key-value-pairs](#array-key-value-pairs).
+
+
 
 #### Expressive string format
 
@@ -95,6 +103,8 @@ Multiple string values can joined together and separated with either spaces "` `
 
 ***Note:*** Regular expressions are used to examine the string values above. You may wish to use them for convenience, or use plain arrays like below for faster speed.
 
+
+
 #### Array key-value-pairs
 
 You can specify values simply as arrays:
@@ -109,6 +119,8 @@ You can specify values simply as arrays:
 
 ***Note:*** You can specify non-scalar values with this library (eg. nested arrays), however they aren't dealt with in any special way. They are currently treated like scalar values.
 
+
+
 ### Using in your code
 
 You can use an Options instance to handle values for you programmatically. The `resolve()` method will parse the input and return the Options object which you can then interrogate in your code:
@@ -120,6 +132,8 @@ $has = $options->has('sendTweet');  // false
 $value = $options->get('sendEmails'); // true
 $value = $options->get('sendTweet');  // null
 ```
+
+
 
 ### Specifying default values
 
@@ -137,6 +151,8 @@ $options->addDefaults($quietModeDefaults);
 // retrieve the defaults back as an array
 $options->getDefaults();
 ```
+
+
 
 #### Resolving a set of options with defaults
 
@@ -177,6 +193,8 @@ $options = Options::defaults('sendEmails sendSms !sendSlack')->resolve('sendTwee
 $options = Options::defaults('sendEmails sendSms !sendSlack')->allowUnexpected()->resolve('sendTweet');
 ```
 
+
+
 ### Validation
 
 If you want to validate the given values you can pass a callback closure to `validator()`. Each value that is picked will be passed to your callback to check that it's valid. If it returns a false-y value, an exception will be raised.
@@ -190,6 +208,8 @@ $callback = function (string $name, $value, bool $wasExpected): bool {
 Options::validator($callback)->defaults('sendEmails sendSms !sendSlack')->resolve('sendEmails=yes');
 ```
 
+
+
 ### Chaining
 
 The methods below may be chained together, and any of them can be called statically to instantiate an Options object:
@@ -199,50 +219,58 @@ $options = Options::allowUnexpected()->validator($callback)->defaults($defaults)
 $results = $options->all();
 ```
 
+
+
 ## Testing
 
 ``` bash
 composer test
 ```
 
+
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+
 
 ### SemVer
 
 This library uses [SemVer 2.0.0](https://semver.org/) versioning. This means that changes to `X` indicate a breaking change: `0.0.X`, `0.X.y`, `X.y.z`. When this library changes to version 1.0.0, 2.0.0 and so forth it doesn't indicate that it's necessarily a notable release, it simply indicates that the changes were breaking.
 
+
+
 ## Treeware
 
-You're free to use this package, but if it makes it to your production environment please plant or buy a tree for the world.
+This package is [Treeware](https://treeware.earth). If you use it in production, then we ask that you [**buy the world a tree**](https://plant.treeware.earth/code-distortion/options) to thank us for our work. By contributing to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
 
-It's now common knowledge that one of the best tools to tackle the climate crisis and keep our temperatures from rising above 1.5C is to <a href="https://www.bbc.co.uk/news/science-environment-48870920">plant trees</a>. If you support this package and contribute to the Treeware forest you'll be creating employment for local families and restoring wildlife habitats.
 
-You can buy trees here [offset.earth/treeware](https://offset.earth/treeware?gift-trees)
-
-Read more about Treeware at [treeware.earth](http://treeware.earth)
 
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-### Code of conduct
+
+
+### Code of Conduct
 
 Please see [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) for details.
+
+
 
 ### Security
 
 If you discover any security related issues, please email tim@code-distortion.net instead of using the issue tracker.
 
+
+
 ## Credits
 
 - [Tim Chandler](https://github.com/code-distortion)
 
+
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-## PHP Package Boilerplate
-
-This package was generated using the [PHP Package Boilerplate](https://laravelpackageboilerplate.com).
