@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
+## [0.5.4] - 2021-12-23
+
+### Added
+- Added support for PHP 8.1
+- Added phpstan ^1.0 to dev dependencies
+
+
+
 ## [0.5.3] - 2021-02-21
 
 ### Added
