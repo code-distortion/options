@@ -18,7 +18,7 @@ class OptionsUnitTest extends TestCase
      *
      * @return array
      */
-    public function optionDataProvider()
+    public static function optionDataProvider(): array
     {
         // all the different inputs that could be passed
         $allVariations = [
@@ -137,9 +137,9 @@ class OptionsUnitTest extends TestCase
         ];
 
         $data = [];
-        $data = array_merge($data, $this->buildCombinations($allVariations, 1));
-        $data = array_merge($data, $this->buildCombinations($manualCombinations, 1));
-        $data = array_merge($data, $this->buildCombinations($combinationVariations, 4));
+        $data = array_merge($data, self::buildCombinations($allVariations, 1));
+        $data = array_merge($data, self::buildCombinations($manualCombinations, 1));
+        $data = array_merge($data, self::buildCombinations($combinationVariations, 4));
         return $data;
     }
 
@@ -150,7 +150,7 @@ class OptionsUnitTest extends TestCase
      * @param integer $recurseCount The number of times to recurse (how many inputs per combination?).
      * @return array
      */
-    protected function buildCombinations(array $variations, int $recurseCount = 1): array
+    protected static function buildCombinations(array $variations, int $recurseCount = 1): array
     {
         // build the input combinations and their expected outcomes
         $recurse = function (int $depthLeft) use (&$recurse, $variations) {
@@ -257,7 +257,7 @@ class OptionsUnitTest extends TestCase
     {
         $toCall = [Options::class, 'parse'];
         if (is_callable($toCall)) {
-            $this->assertSame($expectedOutcome, call_user_func_array($toCall, $inputArgs));
+            self::assertSame($expectedOutcome, call_user_func_array($toCall, $inputArgs));
         }
     }
 
@@ -274,7 +274,7 @@ class OptionsUnitTest extends TestCase
     public function test_usage(): void
     {
         // the various ways of specifying the keys and their values
-        $this->assertSame(
+        self::assertSame(
             [
                 'a' => true,
                 'b' => '',
@@ -295,22 +295,22 @@ class OptionsUnitTest extends TestCase
 
 
         // setting default options
-        $this->assertSame(
+        self::assertSame(
             ['a' => 'a', 'b' => 'b'],
             Options::defaults(['a' => 'a', 'b' => 'b'])->getDefaults()
         );
         // add extra defaults (ie. adding new default options)
-        $this->assertSame(
+        self::assertSame(
             ['a' => 'a', 'b' => 'B', 'c' => 'C'],
             Options::defaults(['a' => 'a', 'b' => 'b'])->addDefaults(['b' => 'B', 'c' => 'C'])->getDefaults()
         );
         // add extra with no defaults to begin with
-        $this->assertSame(
+        self::assertSame(
             ['a' => 'A', 'b' => 'B'],
             Options::addDefaults(['a' => 'A', 'b' => 'B'])->getDefaults()
         );
         // add extra defaults, and then replace with new defaults
-        $this->assertSame(
+        self::assertSame(
             ['b' => 'B'],
             Options::defaults(['a' => 'a', 'b' => 'b'])->addDefaults(['a' => 'A'])->defaults('b=B')->getDefaults()
         );
@@ -318,27 +318,27 @@ class OptionsUnitTest extends TestCase
 
 
         // allow unexpected option 'b' that wasn't in the defaults
-        $this->assertSame(['a' => true, 'b' => true], Options::allowUnexpected()->defaults('a')->resolve('b')->all());
+        self::assertSame(['a' => true, 'b' => true], Options::allowUnexpected()->defaults('a')->resolve('b')->all());
 
         // allow unexpected option 'b' because there were no defaults
-        $this->assertSame(['b' => true], Options::allowUnexpected()->resolve('b')->all());
-        $this->assertSame(['b' => true], Options::resolve('b')->all());
+        self::assertSame(['b' => true], Options::allowUnexpected()->resolve('b')->all());
+        self::assertSame(['b' => true], Options::resolve('b')->all());
 
         // option b was not a default so it was unexpected
-        $this->assertThrows(InvalidOptionException::class, function () {
+        self::assertThrows(InvalidOptionException::class, function () {
             Options::defaults('a')->resolve('b')->all();
         });
 
 
 
         // combine()
-        $this->assertSame(
+        self::assertSame(
             ['a' => 'A', 'b' => 'b'],
             Options::defaults(['a' => 'a', 'b' => 'b'])->resolve(['a' => 'A'])->all() // will be combined with defaults
         );
 
         // parse()
-        $this->assertSame(
+        self::assertSame(
             ['c' => 'C'],
             Options::defaults(['a' => 'a', 'b' => 'b'])->parse(['c' => 'C']) // ignores the defaults
         );
@@ -348,54 +348,54 @@ class OptionsUnitTest extends TestCase
         // test how custom values are stored internally
         // and the resolved result is re-determined when certain changes occur
         $options = Options::defaults('a b c')->allowUnexpected()->resolve('-a -b -d');
-        $this->assertFalse($options->get('a'));
-        $this->assertTrue($options->getDefault('a'));
-        $this->assertFalse($options->getCustom('a'));
-        $this->assertFalse($options->get('b'));
-        $this->assertTrue($options->getDefault('b'));
-        $this->assertFalse($options->getCustom('b'));
-        $this->assertTrue($options->get('c'));
-        $this->assertTrue($options->getDefault('c'));
-        $this->assertNull($options->getCustom('c'));
-        $this->assertFalse($options->get('d'));
-        $this->assertNull($options->getDefault('d'));
-        $this->assertFalse($options->getCustom('d'));
-        $this->assertNull($options->get('e'));
-        $this->assertNull($options->getDefault('e'));
-        $this->assertNull($options->getCustom('e'));
+        self::assertFalse($options->get('a'));
+        self::assertTrue($options->getDefault('a'));
+        self::assertFalse($options->getCustom('a'));
+        self::assertFalse($options->get('b'));
+        self::assertTrue($options->getDefault('b'));
+        self::assertFalse($options->getCustom('b'));
+        self::assertTrue($options->get('c'));
+        self::assertTrue($options->getDefault('c'));
+        self::assertNull($options->getCustom('c'));
+        self::assertFalse($options->get('d'));
+        self::assertNull($options->getDefault('d'));
+        self::assertFalse($options->getCustom('d'));
+        self::assertNull($options->get('e'));
+        self::assertNull($options->getDefault('e'));
+        self::assertNull($options->getCustom('e'));
 
-        $this->assertTrue($options->has('a'));
-        $this->assertFalse($options->has('e'));
+        self::assertTrue($options->has('a'));
+        self::assertFalse($options->has('e'));
 
         $options->defaults('e'); // forces a re-resolve
-        $this->assertFalse($options->get('a'));
-        $this->assertFalse($options->get('b'));
-        $this->assertNull($options->get('c'));
-        $this->assertFalse($options->get('d'));
-        $this->assertTrue($options->get('e'));
+        self::assertFalse($options->get('a'));
+        self::assertFalse($options->get('b'));
+        self::assertNull($options->get('c'));
+        self::assertFalse($options->get('d'));
+        self::assertTrue($options->get('e'));
 
-        $this->assertTrue($options->has('a'));
-        $this->assertTrue($options->has('e'));
+        self::assertTrue($options->has('a'));
+        self::assertTrue($options->has('e'));
 
         $options->addDefaults('c'); // forces a re-resolve
-        $this->assertFalse($options->get('a'));
-        $this->assertFalse($options->get('b'));
-        $this->assertTrue($options->get('c'));
-        $this->assertFalse($options->get('d'));
-        $this->assertTrue($options->get('e'));
+        self::assertFalse($options->get('a'));
+        self::assertFalse($options->get('b'));
+        self::assertTrue($options->get('c'));
+        self::assertFalse($options->get('d'));
+        self::assertTrue($options->get('e'));
 
-        $this->assertTrue($options->has('a'));
-        $this->assertTrue($options->has('e'));
+        self::assertTrue($options->has('a'));
+        self::assertTrue($options->has('e'));
 
         $options->resolve(); // forces a re-resolve
-        $this->assertNull($options->get('a'));
-        $this->assertNull($options->get('b'));
-        $this->assertTrue($options->get('c'));
-        $this->assertNull($options->get('d'));
-        $this->assertTrue($options->get('e'));
+        self::assertNull($options->get('a'));
+        self::assertNull($options->get('b'));
+        self::assertTrue($options->get('c'));
+        self::assertNull($options->get('d'));
+        self::assertTrue($options->get('e'));
 
-        $this->assertFalse($options->has('a'));
-        $this->assertTrue($options->has('e'));
+        self::assertFalse($options->has('a'));
+        self::assertTrue($options->has('e'));
 
 
 
@@ -406,7 +406,7 @@ class OptionsUnitTest extends TestCase
             return true;
         };
         Options::defaults(['a' => 'a'])->validator($callback)->allowUnexpected()->resolve(['b' => 'B'])->all();
-        $this->assertSame(
+        self::assertSame(
             [
                 ['name' => 'b', 'value' => 'B', 'wasExpected' => true],
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
@@ -421,13 +421,13 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($name != 'a'); // fail the 'a' option
         };
-        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
+        self::assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::defaults(['a' => 'a'])
                 ->allowUnexpected()
                 ->validator($callback)
                 ->resolve(['b' => 'B', 'c' => 'C'])->all();
         });
-        $this->assertSame(
+        self::assertSame(
             [
                 ['name' => 'b', 'value' => 'B', 'wasExpected' => true],
                 ['name' => 'c', 'value' => 'C', 'wasExpected' => true],
@@ -442,13 +442,13 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($name != 'b'); // fail the 'b' option
         };
-        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
+        self::assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::defaults(['a' => 'a'])
                 ->allowUnexpected()
                 ->validator($callback)
                 ->resolve(['b' => 'B', 'c' => 'C'])->all();
         });
-        $this->assertSame(
+        self::assertSame(
             [
                 ['name' => 'b', 'value' => 'B', 'wasExpected' => true],
             ],
@@ -461,10 +461,10 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($name != 'a'); // fail the 'a' option
         };
-        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
+        self::assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::validator($callback)->defaults(['a' => 'a']);
         });
-        $this->assertSame(
+        self::assertSame(
             [
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
             ],
@@ -477,10 +477,10 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return ($value == 'a'); // fail the option without the value 'a'
         };
-        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
+        self::assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::validator($callback)->defaults(['a' => 'a'])->addDefaults(['a' => 'A']);
         });
-        $this->assertSame(
+        self::assertSame(
             [
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true], // first time is when defaults are set initially
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
@@ -495,10 +495,10 @@ class OptionsUnitTest extends TestCase
             $params[] = ['name' => $name, 'value' => $value, 'wasExpected' => $wasExpected];
             return false;
         };
-        $this->assertThrows(InvalidOptionException::class, function () use ($callback) {
+        self::assertThrows(InvalidOptionException::class, function () use ($callback) {
             Options::validator($callback)->parse(['a' => 'a']);
         });
-        $this->assertSame(
+        self::assertSame(
             [
                 ['name' => 'a', 'value' => 'a', 'wasExpected' => true],
             ],

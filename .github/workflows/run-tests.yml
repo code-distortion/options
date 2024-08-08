@@ -1,4 +1,4 @@
-name: run-tests
+name: "run-tests"
 
 on:
   push:
@@ -8,59 +8,75 @@ on:
 jobs:
   php-tests:
 
-    name: PHP ${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-prefer }}
-    runs-on: ${{ matrix.os }}
+    name: "PHP ${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-prefer }}"
+    runs-on: "${{ matrix.os }}"
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        php: [8.3, 8.2, 8.1, "8.0", 7.4, 7.3, 7.2, 7.1]
-        dependency-prefer: [prefer-stable, prefer-lowest]
+        os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
+        php: [ "8.3", "8.2", "8.1", "8.0", "7.4", "7.3", "7.2", "7.1" ]
+        dependency-prefer: [ "prefer-stable", "prefer-lowest" ]
         include:
-          - php: 8.3
-            phpunit: "^9.0 | ^10.0"
-          - php: 8.2
-            phpunit: "^9.0 | ^10.0"
-          - php: 8.1
-            phpunit: "^9.0 | ^10.0"
+          - php: "8.3"
+            phpunit: "^10.1.0"
+            phpunit-config-file: "phpunit.github-actions.xml.dist"
+          - php: "8.2"
+            phpunit: "^10.1.0"
+            phpunit-config-file: "phpunit.github-actions.xml.dist"
+          - php: "8.1"
+            phpunit: "^10.1.0"
+            phpunit-config-file: "phpunit.github-actions.xml.dist"
           - php: "8.0"
-            phpunit: ^9.3
-          - php: 7.4
+            phpunit: "^9.3"
+            phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
+          - php: "7.4"
             phpunit: "^7.0 | ^8.0 | ^9.0"
-          - php: 7.3
+            phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
+          - php: "7.3"
             phpunit: "^7.0 | ^8.0 | ^9.0"
-          - php: 7.2
+            phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
+          - php: "7.2"
             phpunit: "^7.0 | ^8.0 | ^9.0"
-          - php: 7.1
+            phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
+          - php: "7.1"
             phpunit: "^7.0 | ^8.0 | ^9.0"
+            phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: "Checkout code"
+        uses: "actions/checkout@v2"
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: "Setup PHP"
+        uses: "shivammathur/setup-php@v2"
         with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring
-          coverage: none
+          php-version: "${{ matrix.php }}"
+          extensions: "mbstring"
+          coverage: "none"
 
-#      # find out composer's cache directory on the current os - for the "Cache dependencies (composer)" step below
-#      - name: Determine composer's cache directory
-#        id: composer-cache
-#        run: |
-#          echo "::set-output name=dir::$(composer config cache-files-dir)"
-#
-#      - name: Cache dependencies (composer)
-#        uses: actions/cache@v2
-#        with:
-#          path: ${{ steps.composer-cache.outputs.dir }}
-#          key: php-${{ matrix.php }}-os-${{ matrix.os }}-dependency-prefer-${{ matrix.dependency-prefer }}-composer-${{ hashFiles('composer.json') }}
-
-      - name: Install dependencies (composer)
+        # find composer's cache directory - so we know which directory to cache in the next step
+      - name: "Find composer's cache directory"
+        id: "composer-cache"
+        shell: "bash" # make sure this step works on Windows - see https://github.com/actions/runner/issues/2224#issuecomment-1289533957
         run: |
-          composer require "phpunit/phpunit:${{ matrix.phpunit }}" --dev --no-interaction --no-update
-          composer update --${{ matrix.dependency-prefer }} --prefer-dist --no-interaction
+            echo "composer_cache_dir=$(composer config cache-files-dir)">> "$GITHUB_OUTPUT"
 
-      - name: Execute tests
-        run: vendor/bin/phpunit
+      - name: "Cache composer's cache directory"
+        uses: "actions/cache@v4"
+        with:
+            path: "${{ steps.composer-cache.outputs.composer_cache_dir }}"
+            key: "[${{ matrix.os }}][php-${{ matrix.php }}][${{ matrix.dependency-prefer }}][composer.json-${{ hashFiles('composer.json') }}]"
+
+      - name: "Install dependencies"
+        uses: "nick-fields/retry@v3"
+        with:
+            timeout_minutes: 5
+            max_attempts: 5
+            shell: "bash" # make sure "^" characters are interpreted properly on Windows (e.g. in "^5.0")
+            command: |
+                composer remove "phpstan/phpstan" --dev --no-interaction --no-update
+                composer remove "squizlabs/php_codesniffer" --dev --no-interaction --no-update
+                composer require "phpunit/phpunit:${{ matrix.phpunit }}" --dev --no-interaction --no-update
+                composer update --${{ matrix.dependency-prefer }} --prefer-dist --no-interaction --optimize-autoloader --no-progress
+
+      - name: "Execute tests"
+        run: vendor/bin/phpunit --configuration=${{ matrix.phpunit-config-file }} --no-coverage --stop-on-error --stop-on-failure
