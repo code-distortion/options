@@ -4,7 +4,7 @@
 ![PHP Version](https://img.shields.io/badge/PHP-7.1%20to%208.3-blue?style=flat-square)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/code-distortion/options/run-tests.yml?branch=master&style=flat-square)](https://github.com/code-distortion/options/actions)
 [![Buy The World a Tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/code-distortion/options)
-[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](.github/CODE_OF_CONDUCT.md)
 
 ***code-distortion/options*** is a PHP library for managing options in a simple, flexible and expressive way.
 
@@ -249,13 +249,13 @@ This package is [Treeware](https://treeware.earth). If you use it in production,
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
 
 
 ### Code of Conduct
 
-Please see [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) for details.
+Please see [CODE_OF_CONDUCT](.github/CODE_OF_CONDUCT.md) for details.
 
 
 
