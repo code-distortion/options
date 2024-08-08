@@ -1,7 +1,7 @@
 # Options
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/code-distortion/options.svg?style=flat-square)](https://packagist.org/packages/code-distortion/options)
-![PHP Version](https://img.shields.io/badge/PHP-7.1%20to%208.2-blue?style=flat-square)
+![PHP Version](https://img.shields.io/badge/PHP-7.1%20to%208.3-blue?style=flat-square)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/code-distortion/options/run-tests.yml?branch=master&style=flat-square)](https://github.com/code-distortion/options/actions)
 [![Buy The World a Tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/code-distortion/options)
 [![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](CODE_OF_CONDUCT.md)
@@ -237,7 +237,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ### SemVer
 
-This library uses [SemVer 2.0.0](https://semver.org/) versioning. This means that changes to `X` indicate a breaking change: `0.0.X`, `0.X.y`, `X.y.z`. When this library changes to version 1.0.0, 2.0.0 and so forth it doesn't indicate that it's necessarily a notable release, it simply indicates that the changes were breaking.
+This library uses [SemVer 2.0.0](https://semver.org/) versioning. This means that changes to `X` indicate a breaking change: `0.0.X`, `0.X.y`, `X.y.z`. When this library changes to version 1.0.0, 2.0.0 and so forth, it doesn't indicate that it's necessarily a notable release, it simply indicates that the changes were breaking.
 
 
 
