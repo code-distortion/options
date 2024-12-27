@@ -311,7 +311,7 @@ class Options
      * @return array The combined options.
      * @throws InvalidOptionException Thrown when an option is given but isn't allowed.
      */
-    protected function combineSets(array $optionSets, array $defaults = null, bool $allowUnexpected = false): array
+    protected function combineSets(array $optionSets, ?array $defaults = null, bool $allowUnexpected = false): array
     {
         $hasDefaults = false;
         if (is_array($defaults)) {
