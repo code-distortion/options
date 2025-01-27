@@ -6,7 +6,7 @@
 
 #### Versions:
 
-- options version:
+- Options version:
 - PHP version:
 - OS + version:
 

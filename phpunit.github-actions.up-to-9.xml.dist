@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
   backupGlobals="true"
-  backupStaticAttributes="false"
+  backupStaticAttributes="true"
   beStrictAboutOutputDuringTests="true"
   bootstrap="vendor/autoload.php"
   colors="false"
@@ -13,11 +13,10 @@
   convertWarningsToExceptions="true"
   defaultTimeLimit="10"
   enforceTimeLimit="false"
-  failOnIncomplete="false"
+  failOnIncomplete="true"
   failOnRisky="true"
   failOnSkipped="true"
   failOnWarning="true"
-  processIsolation="false"
   stopOnDefect="true"
   stopOnError="true"
   stopOnFailure="true"
@@ -28,13 +27,8 @@
   verbose="true"
 >
   <testsuites>
-    <testsuite name="Test Suite">
-      <directory>tests</directory>
+    <testsuite name="Unit">
+      <directory suffix="Test.php">./tests/Unit/</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist>
-      <directory suffix=".php">src/</directory>
-    </whitelist>
-  </filter>
 </phpunit>

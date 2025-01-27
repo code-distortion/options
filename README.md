@@ -1,36 +1,47 @@
 # Options
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/code-distortion/options.svg?style=flat-square)](https://packagist.org/packages/code-distortion/options)
-![PHP Version](https://img.shields.io/badge/PHP-7.1%20to%208.3-blue?style=flat-square)
+![PHP Version](https://img.shields.io/badge/PHP-7.0%20to%208.4-blue?style=flat-square)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/code-distortion/options/run-tests.yml?branch=master&style=flat-square)](https://github.com/code-distortion/options/actions)
 [![Buy The World a Tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/code-distortion/options)
-[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.0%20adopted-ff69b4.svg?style=flat-square)](.github/CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/contributor%20covenant-v2.1%20adopted-ff69b4.svg?style=flat-square)](.github/CODE_OF_CONDUCT.md)
 
-***code-distortion/options*** is a PHP library for managing options in a simple, flexible and expressive way.
+***code-distortion/options*** is a PHP library for managing options in a flexible and expressive way.
 
-``` php
+```php
 use CodeDistortion\Options\Options;
 
-$results = Options::parse('sendAlerts dailyLimit=123.45 !applyDailyLimit currency=AUD plan="Silver Plan"');
-// [ 'sendAlerts' => true,
-//   'dailyLimit' => 123.45,
-//   'applyDailyLimit' => false,
-//   'currency' => 'AUD',
-//   'plan' => 'Silver Plan' ]
+$results = Options::new('sendEmails sendSms !sendSlack plan=gold value=123.45')->all();
 
-// when used programatically
-$options = Options::resolve('sendEmails sendSms !sendSlack');
-$value = $options->get('sendEmails'); // true
-$value = $options->get('sendSlack'); // false
+// [ 'sendEmails' => true,
+//   'sendSms' => true,
+//   'sendSlack' => false,
+//   'plan' => 'gold',
+//   'value' => 123.45 ]
 ```
 
+
+
+## Table of Contents
+
+* [Installation](#installation)
+* [Usage](#usage)
+    * [Simple Usage](#simple-usage)
+    * [Programmatic Usage](#programmatic-usage)
+* [Specifying Default Values](#specifying-default-values)
+* [Restricting Options](#restricting-options)
+* [Validation](#validation)
+* [Fluent Interface](#fluent-interface)
+* [Which Types Of Values Can I Specify?](#which-types-of-values-can-i-specify)
+    * [Expressive String Format](#expressive-string-format)
+    * [Array Key-Value-Pairs](#array-key-value-pairs)
 
 
 ## Installation
 
 Install the package via composer:
 
-``` bash
+```bash
 composer require code-distortion/options
 ```
 
@@ -38,28 +49,177 @@ composer require code-distortion/options
 
 ## Usage
 
-The `parse()` method will take your string and break it down into separate options:
+### Simple Usage
 
-``` php
+Specify values by passing them to `Options::new()`. This will take your set of options and break them down into individual ones.
+
+An instance of `Options` is returned. Call `all()` on it to get the resolved values.
+
+```php
 use CodeDistortion\Options\Options;
 
-$results = Options::parse('sendEmails sendSms !sendSlack');
+$results = Options::new('sendEmails sendSms !sendSlack')->all();
+// or
+$results = Options::new()->options('sendEmails sendSms !sendSlack')->all();
+
 // [ 'sendEmails' => true,
 //   'sendSms' => true,
 //   'sendSlack' => false ]
 ```
 
-
-
-### Value types
-
-You can specify option values as either [expressive strings](#expressive-string-format) or arrays of [key-value-pairs](#array-key-value-pairs).
+`all()` will return the options in alphabetical order.
 
 
 
-#### Expressive string format
+### Programmatic Usage
 
-``` php
+You can also interact with your `Options` instance in a more programmatic fashion.
+
+```php
+use CodeDistortion\Options\Options;
+
+$options = Options::new('sendEmails sendSms !sendSlack');
+// or
+$options = Options::new()->options('sendEmails sendSms !sendSlack');
+
+$has = $options->has('sendEmails');   // true
+$has = $options->has('sendTweet');    // false
+$value = $options->get('sendEmails'); // true
+$value = $options->get('sendTweet');  // null
+```
+
+Calling `options()` multiple times will *replace* the previous options.
+
+However you can *amend* the existing options by calling `amendOptions()`. This allows you to add or override existing options with new ones.
+
+```php
+$myOptions = 'sendEmails sendSms sendSlack';
+$extraOptions = '!sendSms';
+$options = Options::new()
+    ->options($myOptions)
+    ->amendOptions($extraOptions);
+```
+
+
+
+## Specifying Default Values
+
+You can apply default values to use by passing them to `defaults()`. The default values will be applied for any options that aren't specified when calling `options()`.
+
+It doesn't matter which order you call `defaults()` and `resolve()` in.
+
+```php
+$options = Options::new()
+    ->defaults('sendEmails sendSms sendSlack')
+    ->options('!sendEmails');
+
+$options->get('sendEmails'); // false
+$options->get('sendSms');    // true
+```
+
+Calling `defaults()` multiple times will *replace* the previous defaults.
+
+However you can *amend* the existing defaults by calling `amendDefaults()`. This allows you to add or override existing defaults with new ones.
+
+```php
+$defaults = 'sendEmails sendSms sendSlack';
+$quietModeDefaults = '!sendSms';
+$options = Options::new()
+    ->defaults($defaults)
+    ->amendDefaults($quietModeDefaults);
+```
+
+
+
+## Restricting Options
+
+You can restrict the possible options to those available in the defaults by calling `restrictUnexpected()`.
+
+Options passed to `options()` that aren't present in the defaults will generate an `InvalidOptionException`.
+
+```php
+// the 'sendTweet' option is allowed because restrictUnexpected() was not called
+$options = Options::new()
+    ->defaults('sendEmails sendSms !sendSlack')
+    ->options('sendTweet');
+
+// InvalidOptionException: "The option "sendTweet" was not expected"
+$options = Options::new()
+    ->defaults('sendEmails sendSms !sendSlack')
+    ->restrictUnexpected()
+    ->options('sendTweet');
+```
+
+
+
+## Validation
+
+You can validate the options by passing a callback to `validator()`.
+
+Each option will be passed to your callback, letting you choose if it's valid.
+
+If your callback returns false, that option will be ignored.
+
+```php
+$validatorCallback = function (string $name, $value, bool $wasExpected): bool {
+    return is_bool($value); // ensure the value is a boolean
+};
+
+// sendEmails is ignored because it's not a boolean
+Options::new()
+    ->validator($validatorCallback)
+    ->defaults('sendEmails sendSms !sendSlack')
+    ->options('sendEmails=yes');
+```
+
+You can also pass a second parameter to `validator()` instructing it to throw an exception if a value is invalid.
+
+```php
+// InvalidOptionException: "The option "sendEmails" and/or it's value "yes" are not allowed"
+Options::new()
+    ->validator($validatorCallback, true) // <<<
+    ->defaults('sendEmails sendSms !sendSlack')
+    ->options('sendEmails=yes');
+```
+
+
+
+## Fluent Interface
+
+The `options()`, `amendOptions()`, `defaults()`, `amendDefaults()`, `restrictUnexpected()` and `validator()` methods can be chained together, and can be called in any order.
+
+```php
+// instantiate
+$options = new Options();
+$options = new Options($myOptions);
+$options = Options::new();
+$options = Options::new($myOptions);
+
+// call and chain any of these, in any order
+$options->options($myOptions)
+    ->amendOptions($extraOptions)
+    ->defaults($defaults)
+    ->amendDefaults($extraDefaults)
+    ->restrictUnexpected()
+    ->validator($validatorCallback);
+```
+
+```php
+// then consult your Options instance like normal
+$results = $options->all();
+$has = $options->has('sendEmails');
+$value = $options->get('sendEmails');
+```
+
+
+
+## Which Types Of Values Can I Specify?
+
+### Expressive String Format
+
+You can specify values as strings, with or without modifiers.
+
+```php
 'myVal' // ['myVal' => true]
 
 // with modifiers
@@ -93,23 +253,21 @@ You can specify option values as either [expressive strings](#expressive-string-
 "'my \'val\''=true" // ["my 'val'" => true]
 ```
 
-Multiple string values can joined together and separated with either spaces "` `" or a comma `,` (or both):
+Multiple string values can be passed together at the same time, separated with spaces "` `" or a comma "`,`" (or both):
 
-``` php
+```php
 'myVal1=abc +myVal2 -myVal3'   // ['myVal1' => 'abc', 'myVal2' => true, 'myVal3' => false']
 'myVal1=abc,+myVal2,-myVal3'   // ['myVal1' => 'abc', 'myVal2' => true, 'myVal3' => false']
 'myVal1=abc, +myVal2, -myVal3' // ['myVal1' => 'abc', 'myVal2' => true, 'myVal3' => false']
 ```
 
-***Note:*** Regular expressions are used to examine the string values above. You may wish to use them for convenience, or use plain arrays like below for faster speed.
 
 
+### Array Key-Value-Pairs
 
-#### Array key-value-pairs
+Regular expressions are used to examine the string values above. You may wish to use them for convenience, or use plain arrays like below for faster speed.
 
-You can specify values simply as arrays:
-
-``` php
+```php
 ['myVal' => true]
 ['myVal' => false]
 ['myVal' => 'some value']
@@ -117,115 +275,15 @@ You can specify values simply as arrays:
 // etc
 ```
 
-***Note:*** You can specify non-scalar values with this library (eg. nested arrays), however they aren't dealt with in any special way. They are currently treated like scalar values.
+***Note:*** You can specify non-scalar values when passing key-value-pair arrays (e.g. nested arrays), however they aren't dealt with in any special way. They are currently treated like scalar values.
 
 
 
-### Using in your code
+## Testing This Package
 
-You can use an Options instance to handle values for you programmatically. The `resolve()` method will parse the input and return the Options object which you can then interrogate in your code:
-
-``` php
-$options = Options::resolve('sendEmails sendSms !sendSlack');
-$has = $options->has('sendEmails'); // true
-$has = $options->has('sendTweet');  // false
-$value = $options->get('sendEmails'); // true
-$value = $options->get('sendTweet');  // null
-```
-
-
-
-### Specifying default values
-
-You can specify default fall-back values to use by calling `defaults()`:
-
-``` php
-// set the defaults for the first time (or replaces them completely)
-$defaults = 'sendEmails sendSms !sendSlack';
-$options = Options::defaults($defaults);
-
-// add to the existing defaults (overriding where necessary)
-$quietModeDefaults = '!sendSms';
-$options->addDefaults($quietModeDefaults);
-
-// retrieve the defaults back as an array
-$options->getDefaults();
-```
-
-
-
-#### Resolving a set of options with defaults
-
-To combine default values and custom values, use the `defaults()` method and then `resolve()`:
-
-``` php
-// combine default and custom values
-$defaults = 'sendEmails sendSms !sendSlack';
-$userPrefs = '!sendEmails sendSms';
-$options = Options::defaults($defaults)->resolve($userPrefs);
-
-// check if particular options exist
-$has = $options->has('sendEmails'); // true
-$has = $options->has('sendTweet');  // false
-$has = $options->hasDefault('sendSlack'); // true
-$has = $options->hasCustom('sendSlack');  // false
-
-// retrieve individual values from $options
-$value = $options->get('sendEmails'); // false
-$value = $options->get('sendTweet');  // null
-$value = $options->getDefault('sendEmails'); // true
-$value = $options->getCustom('sendEmails');  // false
-
-// get the results combined
-$results = $options->all();
-// [ 'sendEmails' => false,
-//   'sendSms' => true,
-//   'sendSlack' => false ]
-```
-
-***Note:*** If you specify default values, any values passed to `resolve()` that aren't present in the defaults will generate an exception unless `allowUnexpected()` is called before hand:
-
-``` php
-// InvalidOptionException: "The option "sendTweet" was not expected"
-$options = Options::defaults('sendEmails sendSms !sendSlack')->resolve('sendTweet');
-
-// the 'sendTweet' option is now allowed because allowUnexpected() was called
-$options = Options::defaults('sendEmails sendSms !sendSlack')->allowUnexpected()->resolve('sendTweet');
-```
-
-
-
-### Validation
-
-If you want to validate the given values you can pass a callback closure to `validator()`. Each value that is picked will be passed to your callback to check that it's valid. If it returns a false-y value, an exception will be raised.
-
-``` php
-$callback = function (string $name, $value, bool $wasExpected): bool {
-    return (is_bool($value)); // ensure the value is a boolean
-};
-
-// InvalidOptionException: "The option "sendEmails" and/or it's value "yes" are not allowed"
-Options::validator($callback)->defaults('sendEmails sendSms !sendSlack')->resolve('sendEmails=yes');
-```
-
-
-
-### Chaining
-
-The methods below may be chained together, and any of them can be called statically to instantiate an Options object:
-
-``` php
-$options = Options::allowUnexpected()->validator($callback)->defaults($defaults)->addDefaults($extraDefaults)->resolve($customValues); // chainable
-$results = $options->all();
-```
-
-
-
-## Testing
-
-``` bash
-composer test
-```
+- Clone this package: `git clone https://github.com/code-distortion/options.git .`
+- Run `composer install` to install dependencies
+- Run the tests: `composer test`
 
 
 

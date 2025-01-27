@@ -2,8 +2,8 @@
 <phpunit
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-  backupGlobals="true"
-  backupStaticProperties="false"
+  backupGlobals="false"
+  backupStaticProperties="true"
   beStrictAboutChangesToGlobalState="false"
   beStrictAboutOutputDuringTests="true"
   beStrictAboutTestsThatDoNotTestAnything="true"
@@ -21,13 +21,14 @@
   displayDetailsOnSkippedTests="true"
   enforceTimeLimit="false"
   failOnDeprecation="false"
-  failOnIncomplete="false"
+  failOnIncomplete="true"
   failOnEmptyTestSuite="true"
   failOnNotice="true"
   failOnRisky="true"
   failOnSkipped="true"
   failOnWarning="true"
   processIsolation="false"
+  requireCoverageMetadata="false"
   stopOnDefect="true"
   stopOnDeprecation="false"
   stopOnError="true"
@@ -39,13 +40,13 @@
   stopOnWarning="true"
 >
   <testsuites>
-    <testsuite name="Test Suite">
-      <directory>tests</directory>
+    <testsuite name="Unit">
+      <directory suffix="Test.php">./tests/Unit/</directory>
     </testsuite>
   </testsuites>
   <source>
     <include>
-      <directory suffix=".php">src/</directory>
+      <directory suffix=".php">./src/</directory>
     </include>
   </source>
 </phpunit>

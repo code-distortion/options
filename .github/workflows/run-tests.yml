@@ -9,15 +9,18 @@ on:
     - cron: "0 0 * * 0"
 
 jobs:
-  php-tests:
+
+  all_tests:
 
     name: "PHP${{ matrix.php }} ${{ matrix.os-title }} ${{ matrix.dependency-prefer-title }}"
     runs-on: "${{ matrix.os }}"
+    permissions:
+      contents: "read"
     strategy:
       fail-fast: true
       matrix:
         os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
-        php: [ "8.4", "8.3", "8.2", "8.1", "8.0", "7.4", "7.3", "7.2", "7.1" ]
+        php: [ "8.4", "8.3", "8.2", "8.1", "8.0", "7.4", "7.3", "7.2", "7.1", "7.0" ]
         dependency-prefer: [ "prefer-stable", "prefer-lowest" ]
         include:
           - php: "8.4"
@@ -36,16 +39,19 @@ jobs:
             phpunit: "^9.3"
             phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
           - php: "7.4"
-            phpunit: "^7.0 | ^8.0 | ^9.0"
+            phpunit: "^6.0 | ^7.0 | ^8.0 | ^9.0"
             phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
           - php: "7.3"
-            phpunit: "^7.0 | ^8.0 | ^9.0"
+            phpunit: "^6.0 | ^7.0 | ^8.0 | ^9.0"
             phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
           - php: "7.2"
-            phpunit: "^7.0 | ^8.0 | ^9.0"
+            phpunit: "^6.0 | ^7.0 | ^8.0 | ^9.0"
             phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
           - php: "7.1"
-            phpunit: "^7.0 | ^8.0 | ^9.0"
+            phpunit: "^6.0 | ^7.0 | ^8.0 | ^9.0"
+            phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
+          - php: "7.0"
+            phpunit: "^6.0 | ^7.0 | ^8.0 | ^9.0"
             phpunit-config-file: "phpunit.github-actions.up-to-9.xml.dist"
 
           - os: "ubuntu-latest"

@@ -2,7 +2,39 @@
 
 All notable changes to `code-distortion/options` will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+
+
+## [0.6.0] - 2025-01-27
+
+### Added
+- Added support for PHP 7.0
+- Added support for PHP 8.4
+- Added `strict_types=1` to all files
+- Improved the test suite
+- Added the `amendOptions()` method
+- Added the ability for the caller to choose if unexpected options (not present in the set of defaults) should be ignored or throw an exception
+- Added the ability for the caller to choose if invalid options (checked by the `validator()` callback) should be ignored or throw an exception
+- Updated the mechanism used to call the `validator()` callback so the callback can choose which parameters to use (from `$name`, `$value` and `$wasExpected`), and the order
+
+### Changed
+- Made the normal constructor publicly callable
+- Renamed the `resolve()` method to `options()`
+- Renamed the `addDefaults()` method to `amendDefaults()`
+- Replaced the `allowUnexpected()` method with `restrictUnexpected()`
+- Changed the unexpected option checking so it ignores unexpected options by default instead of throwing an exception
+- Changed the validator checking so it ignores invalid options by default instead of throwing an exception
+
+### Removed
+- Removed the `parse()` method
+- Removed the `hasCustom()` method
+- Removed the `getCustom()` method
+- Removed the `hasDefault()` method
+- Removed the `getDefault()` method
+- Removed the `getDefaults()` method
+- Removed the ability for `options()`, `amendOptions()`, `defaults()`, `amendDefaults()`, `restrictUnexpected()` and `validator()` to be called statically
+- Removed `UndefinedMethodException` which was thrown if a method was called that didn't exist
 
 
 
