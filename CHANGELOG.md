@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 
+## [0.6.1] - 2025-01-28
+
+### Fixed
+- Allow `null` to be passed as an option. It is ignored instead of throwing an exception
+
+
+
 ## [0.6.0] - 2025-01-27
 
 ### Added
@@ -25,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Replaced the `allowUnexpected()` method with `restrictUnexpected()`
 - Changed the unexpected option checking so it ignores unexpected options by default instead of throwing an exception
 - Changed the validator checking so it ignores invalid options by default instead of throwing an exception
+- Options returned by `all()` are now ordered in alphabetical order
 
 ### Removed
 - Removed the `parse()` method

@@ -420,6 +420,8 @@ class Options
                             $parsedSet[$key] = $value;
                         }
                     }
+                } elseif (is_null($value)) {
+                    // ignore
                 } else {
                     throw InvalidOptionException::optionArraysMustContainStringsOrHaveKeys();
                 }

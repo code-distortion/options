@@ -829,7 +829,7 @@ class OptionsUnitTest extends PHPUnitTestCase
                         $currentArray = [];
                     }
                     $currentString .= ((mb_strlen($currentString) > 0) ? ' ' : '') . $input;
-                    // stick arrays together
+                // stick arrays together
                 } elseif (is_array($input)) {
                     if (mb_strlen($currentString) > 0) {
                         $currentInputs[] = $currentString;
@@ -848,6 +848,8 @@ class OptionsUnitTest extends PHPUnitTestCase
                     if (!$foundKey) {
                         $currentArray = array_merge($currentArray, $input);
                     }
+                } else {
+                    $currentArray = array_merge($currentArray, [$input]);
                 }
             }
             if (count($currentArray) > 0) {
